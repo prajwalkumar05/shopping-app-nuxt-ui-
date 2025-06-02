@@ -1,0 +1,87 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+@import "./utils/flex.css";
+
+@theme {
+  --color-primary: #086972;
+  --color-secondary: #086972;
+  --color-tertiary: #6741d9;
+  --color-info: #339af0;
+  --color-success: #28a745;
+  --color-warning: #fcc419;
+  --color-error: #c92a2a;
+}
+
+:root {
+  --ui-primary: #086972;
+  --ui-secondary: #086972;
+
+  /* Background Colors */
+  --bg-primary: #f4f2ee;
+  --bg-secondary: #fff;
+  --bg-white: #ffffff;
+  --bg-theme: #086972;
+
+  /* Text Colors */
+  --text-primary: #000;
+  --text-secondary: #333;
+  --text-white: #fff;
+  --text-theme: #086972;
+
+  --spacing-medium: 10px;
+  --spacing-large: 20px;
+  --spacing-xlarge: 30px;
+}
+
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+.bg-theme {
+  background-color: var(--bg-theme);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-white {
+  color: var(--text-white);
+}
+.text-theme {
+  color: var(--text-theme);
+}
+
+/* Custom Button Styles */
+.btn-theme-primary {
+  background-color: var(--ui-primary);
+  color: var(--text-white);
+  border-color: var(--ui-primary);
+}
+
+.btn-theme-outline {
+  background-color: transparent;
+  color: var(--ui-primary);
+  border-color: var(--ui-primary);
+}
+
+/* Spacing Classes - Medium */
+.mt-medium {
+  margin-top: var(--spacing-medium);
+}
+.mb-medium {
+  margin-bottom: var(--spacing-medium);
+}
+.ml-medium {
+  margin-left: var(--spacing-medium);
+}
+.mr-medium {
+  margin-right: var(--spacing-medium);
+}
+.m-medium {
+  margin: var(--spacing-medium);
+}
