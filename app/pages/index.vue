@@ -7,6 +7,7 @@
       </div>
     </div>
 
+
     <div class="flex-1 flex justify-center overflow-hidden bg-primary">
       <div class="w-full max-w-[1200px] px-4 flex flex-col">
         <div v-if="loading" class="flex-1 flex justify-center items-center">

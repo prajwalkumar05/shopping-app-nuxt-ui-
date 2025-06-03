@@ -74,6 +74,7 @@
 
 <script setup>
 import { useCartStore } from "~/stores/cart";
+import { DYNAMIC_ROUTES } from '~/config/routes'
 import { ref } from "vue";
 import { navigateTo } from "#app";
 
@@ -117,6 +118,6 @@ const addToCart = async () => {
 };
 
 const viewProduct = () => {
-  navigateTo(`/products/${props.product.id}`);
+  navigateTo(DYNAMIC_ROUTES.products.productDetails(props.product.id));
 };
 </script>

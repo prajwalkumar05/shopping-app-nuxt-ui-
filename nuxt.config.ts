@@ -2,25 +2,21 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  modules: [
-    '@nuxt/ui',
-    '@nuxt/eslint',
-    '@pinia/nuxt'
-  ],
+  modules: ["@nuxt/ui", "@nuxt/eslint", "@pinia/nuxt"],
 
-  css: ['~/assets/css/main.css'],
+  css: ["~/assets/css/main.css"],
 
-   runtimeConfig: {
+  runtimeConfig: {
     public: {
-      apiBase: "https://fakestoreapi.com",
+      apiBaseUrl:
+        process.env.NUXT_PUBLIC_API_BASE_URL || "https://dummyjson.com",
+      appName: process.env.APP_NAME || "Shopping App",
     },
   },
 
-  
-
   future: {
-    compatibilityVersion: 4
+    compatibilityVersion: 4,
   },
 
-  compatibilityDate: '2024-11-27'
-})
+  compatibilityDate: "2024-11-27",
+});

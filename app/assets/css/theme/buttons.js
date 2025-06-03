@@ -26,7 +26,7 @@ export const buttonTheme = {
     {
       color: 'primary',
       variant: 'ghost',
-      class: 'text- bg-theme hover:bg-primary-100 transition-colors duration-200 cursor-pointer '
+      class: 'text-theme bg-primary hover:bg-primary-100 transition-colors duration-200 cursor-pointer '
     }
   ],
   defaultVariants: {

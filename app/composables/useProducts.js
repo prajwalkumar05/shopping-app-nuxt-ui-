@@ -1,5 +1,6 @@
 import { ref } from "vue"
 import axios from "axios"
+import { getProductsApi, getProductByIdApi } from "~/services/api/products/product"
 
 export const useProducts = () => {
   const products = ref([])
@@ -15,10 +16,7 @@ export const useProducts = () => {
 
     const skip = (page - 1) * limit
     
-    // DummyJSON API call with limit and skip using axios
-    return axios.get(
-      `https://dummyjson.com/products?limit=${limit}&skip=${skip}&select=id,title,price,thumbnail,category,rating,description`
-    )
+    return axios.get(getProductsApi(limit, skip))
     .then((response) => {
       const data = response.data
       
@@ -41,7 +39,7 @@ export const useProducts = () => {
     loading.value = true
     error.value = null
 
-    return axios.get(`https://dummyjson.com/products/${id}`)
+    return axios.get(getProductByIdApi(id))
     .then((response) => {
       const product = response.data
 

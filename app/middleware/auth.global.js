@@ -1,44 +1,45 @@
-"use client"
+"use client";
 
-import { useAuthStore } from "~/stores/auth"
+import { useAuthStore } from "~/stores/auth";
+import { ROUTES, PUBLIC_ROUTES } from "~/config/routes";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const authStore = useAuthStore()
+  const authStore = useAuthStore();
 
   // Skip middleware on server
-  if (process.server) return
+  if (process.server) return;
 
-  await authStore.initAuth()
+  await authStore.initAuth();
 
-  // Token expiry check and refresh
-  const expiryTime = localStorage.getItem('expiryTime')
-  
+  const expiryTime = localStorage.getItem("expiryTime");
+
   if (expiryTime && Date.now() > parseInt(expiryTime)) {
-    console.log('Token expired, attempting refresh...')
-    await authStore.refreshExpiredToken()
-    
+    await authStore.refreshExpiredToken();
   }
 
-  // Define public routes that don't require authentication
-  const publicRoutes = ['/auth/login', '/auth/register']
-  
-  const isPublicRoute = publicRoutes.includes(to.path)
+  // Checking if current route is public
+  const isPublicRoute = PUBLIC_ROUTES.includes(to.path);
 
   if (!authStore.isAuthenticated) {
-    if (to.path === '/') {
-      return navigateTo('/auth/login')
+    if (to.path === ROUTES.app.home) {
+      return navigateTo(ROUTES.auth.login);
     }
+
     if (isPublicRoute) {
-      return // Allow access
+      return;
     }
-    return navigateTo('/auth/login')
-  } 
-  
+
+    // Redirect ti login
+    return navigateTo(ROUTES.auth.login);
+  }
+
   // If user IS authenticated
   else {
-    if (isPublicRoute) {
-      return navigateTo('/')
+    // Redirect to home page
+    if (isPublicRoute && to.path !== ROUTES.app.home) {
+      return navigateTo(ROUTES.app.home);
     }
-    return // Allow access
+
+    return;
   }
-})
+});

@@ -51,6 +51,7 @@
 
 <script setup>
 import RegisterForm from "~/components/auth/RegisterForm.vue";
+import { ROUTES} from "~/config/routes";
 
 definePageMeta({
   layout: false,
@@ -67,6 +68,6 @@ const handleRegisterSuccess = () => {
     timeout: 4000,
   });
 
-  navigateTo("/auth/login");
+  navigateTo(ROUTES.auth.login);
 };
 </script>

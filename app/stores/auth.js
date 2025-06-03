@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { navigateTo } from "#app";
 import axios from "axios";
+import { getUserLoginApi, getUserRefreshTokenApi } from "~/services/api/auth/user";
+import { ROUTES } from "~/config/routes";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -23,45 +25,41 @@ export const useAuthStore = defineStore("auth", {
     // Initialize auth from localStorage
     initAuth() {
       if (!process.client) {
-        return new Promise((resolve) => resolve(false));
+        return false;
       }
 
-      return new Promise((resolve, reject) => {
-        try {
-          const token = localStorage.getItem("accessToken");
-          const refreshToken = localStorage.getItem("refreshToken");
-          const user = localStorage.getItem("user");
-          const rememberMe = localStorage.getItem("rememberMe") === "true";
+      try {
+        const token = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+        const user = localStorage.getItem("user");
+        const rememberMe = localStorage.getItem("rememberMe") === "true";
 
-  
-
-          if (token && user) {
-            this.accessToken = token;
-            this.refreshToken = refreshToken;
-            this.user = JSON.parse(user);
-            this.rememberMe = rememberMe;
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } catch (error) {
-          this.logout();
-          resolve(false);
+        if (token && user) {
+          this.accessToken = token;
+          this.refreshToken = refreshToken;
+          this.user = JSON.parse(user);
+          this.rememberMe = rememberMe;
+          return true;
         }
-      });
+        return false;
+      } catch (error) {
+        this.logout();
+        return false;
+      }
     },
 
     // Login user
-    login(credentials) {
+    async login(credentials) {
       this.loading = true;
       this.error = null;
 
-      return axios.post("https://dummyjson.com/auth/login", {
-        username: credentials.username,
-        password: credentials.password,
-        expiresInMins: 30,
-      })
-      .then((response) => {
+      try {
+        const response = await axios.post(getUserLoginApi(), {
+          username: credentials.username,
+          password: credentials.password,
+          expiresInMins: 30,
+        });
+
         const data = response.data;
         const token = data.accessToken || data.token;
 
@@ -92,61 +90,56 @@ export const useAuthStore = defineStore("auth", {
         }
 
         return { success: true };
-      })
-      .catch((error) => {
+      } catch (error) {
         this.error = error.message || "Login failed";
         throw error;
-      })
-      .finally(() => {
+      } finally {
         this.loading = false;
-      });
+      }
     },
 
     // Refresh expired token
-    refreshExpiredToken() {
+    async refreshExpiredToken() {
       const refreshToken = localStorage.getItem("refreshToken");
       const rememberMe = JSON.parse(
         localStorage.getItem("rememberMe") || "false"
       );
 
-      return new Promise((resolve) => {
-        if (rememberMe && refreshToken) {
+      if (!rememberMe || !refreshToken) {
+        this.clearAuthData();
+        return true; // Session expired, need logout
+      }
 
-          axios.post("https://dummyjson.com/auth/refresh", {
-            refreshToken: refreshToken,
-            expiresInMins: 30,
-          })
-          .then((response) => {
-            const data = response.data;
-            const newToken = data.accessToken || data.token;
+      try {
+        const response = await axios.post(getUserRefreshTokenApi(), {
+          refreshToken: refreshToken,
+          expiresInMins: 30,
+        });
 
-            // Update state
-            this.accessToken = newToken;
-            if (data.refreshToken) {
-              this.refreshToken = data.refreshToken;
-            }
+        const data = response.data;
+        const newToken = data.accessToken || data.token;
 
-            // Update localStorage
-            localStorage.setItem("accessToken", newToken);
-            if (data.refreshToken) {
-              localStorage.setItem("refreshToken", data.refreshToken);
-            }
-            localStorage.setItem(
-              "expiryTime",
-              String(Date.now() + 30 * 60 * 1000)
-            );
-
-            resolve(false); // Session NOT expired, continue
-          })
-          .catch((error) => {
-            this.clearAuthData();
-            resolve(true); // Session expired, need logout
-          });
-        } else {
-          this.clearAuthData();
-          resolve(true); 
+        // Update state
+        this.accessToken = newToken;
+        if (data.refreshToken) {
+          this.refreshToken = data.refreshToken;
         }
-      });
+
+        // Update localStorage
+        localStorage.setItem("accessToken", newToken);
+        if (data.refreshToken) {
+          localStorage.setItem("refreshToken", data.refreshToken);
+        }
+        localStorage.setItem(
+          "expiryTime",
+          String(Date.now() + 30 * 60 * 1000)
+        );
+
+        return false; // Session NOT expired, continue
+      } catch (error) {
+        this.clearAuthData();
+        return true; // Session expired, need logout
+      }
     },
 
     // Clear auth data
@@ -171,7 +164,7 @@ export const useAuthStore = defineStore("auth", {
     // Logout user
     logout() {
       this.clearAuthData();
-      navigateTo("/auth/login");
+      navigateTo(ROUTES.auth.login);
     },
 
     // Clear error
