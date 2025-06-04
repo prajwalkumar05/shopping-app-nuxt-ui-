@@ -10,6 +10,7 @@
       <CartDrawer />
       <UButton
         icon="i-lucide-log-out"
+        color="primary"
         variant="ghost"
         @click="isLogoutModalOpen = true"
       >
@@ -28,7 +29,6 @@
       @confirm="handleLogout"
       @cancel="isLogoutModalOpen = false"
     >
-      <UButton icon="i-lucide-log-out" variant="ghost" label="Logout" />
     </ConfirmModal>
   </div>
 </template>
@@ -355,3 +355,9 @@ const handleLogout = async () => {
   }
 };
 </script>
+
+<style>
+
+
+
+</style>

@@ -35,7 +35,7 @@ export const paginationTheme = {
       class: {
         first: 'bg-transparent text-secondary hover:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed border border-gray-300 rounded-md transition-colors duration-200',
         prev: 'bg-transparent text-gray-600 hover:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed border border-gray-300 rounded-md transition-colors duration-200',
-        item: 'bg-transparent text-gray-600 hover:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed border border-gray-300 rounded-md transition-colors duration-200 [&[aria-current=page]]:bg-primary [&[aria-current=page]]:text-white cursor-pointer',
+        item: 'bg-white text-gray-600 hover:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed border border-gray-300 rounded-md transition-colors duration-200 [&[aria-current=page]]:bg-primary [&[aria-current=page]]:text-white cursor-pointer',
         next: 'bg-transparent text-gray-600 hover:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed border border-gray-300 rounded-md transition-colors duration-200',
         last: 'bg-transparent text-secondary  hover:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed border border-gray-300 rounded-md transition-colors duration-200'
       }

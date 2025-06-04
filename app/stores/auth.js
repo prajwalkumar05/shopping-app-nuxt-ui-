@@ -1,8 +1,6 @@
-// stores/auth.js
 import { defineStore } from "pinia";
 import axios from "axios";
 import { ROUTES } from "~/config/routes";
-import { getUserLoginApi, getUserRefreshTokenApi } from "~/services/api/auth/user";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -19,12 +17,16 @@ export const useAuthStore = defineStore("auth", {
   },
 
   actions: {
-    // Clear error
     clearError() {
       this.error = null;
     },
 
-    // Check session validity
+    clearAuthState() {
+      this.user = null;
+      this.isAuthenticated = false;
+      this.error = null;
+    },
+
     async checkAuth() {
       try {
         const response = await axios.get('/api/auth/me', { 
@@ -35,13 +37,26 @@ export const useAuthStore = defineStore("auth", {
         this.isAuthenticated = true;
         return true;
       } catch (error) {
-        this.user = null;
-        this.isAuthenticated = false;
+        this.clearAuthState();
         return false;
       }
     },
 
-    // Login
+    async forceLogout(reason = 'Session expired') {
+      this.clearAuthState();
+      
+      try {
+        await axios.post('/api/auth/logout', {}, { 
+          withCredentials: true,
+          timeout: 2000
+        });
+      } catch (error) {
+        // Ignore logout API errors
+      }
+      
+      await navigateTo(ROUTES.auth.login, { replace: true });
+    },
+
     async login(credentials) {
       this.loading = true;
       this.error = null;
@@ -51,7 +66,6 @@ export const useAuthStore = defineStore("auth", {
           withCredentials: true
         });
 
-        // Check if login was successful
         if (response.data && response.data.success && response.data.user) {
           this.user = response.data.user;
           this.isAuthenticated = true;
@@ -61,33 +75,23 @@ export const useAuthStore = defineStore("auth", {
         }
 
       } catch (error) {
-        // Handle different types of errors
         if (error.response) {
           this.error = error.response.data?.message || error.response.data?.statusMessage || 'Login failed';
-        } 
+        } else if (error.request) {
+          this.error = 'Network error. Please check your connection.';
+        } else {
+          this.error = error.message || 'Login failed';
+        }
         
-        this.isAuthenticated = false;
-        this.user = null;
+        this.clearAuthState();
         throw error;
       } finally {
         this.loading = false;
       }
     },
 
-    // Logout
     async logout() {
-      try {
-        await axios.post('/api/auth/logout', {}, { 
-          withCredentials: true 
-        });
-      } catch (error) {
-        return 
-      }
-      
-      this.user = null;
-      this.isAuthenticated = false;
-      this.error = null;
-      await navigateTo(ROUTES.auth.login);
+      await this.forceLogout('Manual logout');
     }
   }
 });

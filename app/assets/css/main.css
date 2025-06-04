@@ -2,6 +2,7 @@
 @import "@nuxt/ui";
 @import "./utils/flex.css";
 
+
 @theme {
   --color-primary: #086972;
   --color-secondary: #086972;
@@ -10,6 +11,16 @@
   --color-success: #28a745;
   --color-warning: #fcc419;
   --color-error: #c92a2a;
+
+  --font-sans: "Inter", "Helvetica Neue", sans-serif;
+
+  --font-size-2xs: 1.0rem;    
+  --font-size-xs: 1.2rem;     
+  --font-size-sm: 1.4rem;     
+  --font-size-base: 1.6rem;   
+  --font-size-lg: 1.8rem;     
+  --font-size-xl: 2.0rem;    
+
 }
 
 :root {
@@ -84,4 +95,5 @@
 }
 .m-medium {
   margin: var(--spacing-medium);
+  font-family:cursive;
 }

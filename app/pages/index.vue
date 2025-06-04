@@ -1,12 +1,12 @@
 <template>
+  <!-- <UButton active color="success" variant="outline"> Button </UButton>
+  <UButton active color="error" variant="solid"> Button </UButton> -->
   <div class="h-full flex flex-col">
-    
     <div class="flex justify-center bg-primary">
       <div class="w-full max-w-[1200px] px-4 py-4">
         <h1 class="text-2xl text-primary font-bold">Products</h1>
       </div>
     </div>
-
 
     <div class="flex-1 flex justify-center overflow-hidden bg-primary">
       <div class="w-full max-w-[1200px] px-4 flex flex-col">
