@@ -7,3 +7,7 @@ export const getUserLoginApi = () => {
 export const getUserRefreshTokenApi = () => {
   return `${getApiBaseUrl()}/auth/refresh`
 }
+
+export const getUserLogoutApi = () => {
+  return `${getApiBaseUrl()}/auth/logout`
+}

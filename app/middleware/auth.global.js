@@ -1,45 +1,35 @@
-"use client";
-
-import { useAuthStore } from "~/stores/auth";
+// middleware/auth.global.js
 import { ROUTES, PUBLIC_ROUTES } from "~/config/routes";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
+  
+  if (to.path.startsWith('/api/') || process.server) return;
+
   const authStore = useAuthStore();
+  
+  const isValid = await authStore.checkAuth();
 
-  // Skip middleware on server
-  if (process.server) return;
+  const publicRoutes = [
+    ROUTES.app.home,        
+    ROUTES.products.productsList, 
+    ...PUBLIC_ROUTES           
+  ];
+  
+  // Check if current route is public
+  const isPublicRoute = publicRoutes.includes(to.path) || to.path.startsWith('/products/'); // For dynamic product details
+  
+  const isAuthRoute = PUBLIC_ROUTES.includes(to.path);
 
-  await authStore.initAuth();
-
-  const expiryTime = localStorage.getItem("expiryTime");
-
-  if (expiryTime && Date.now() > parseInt(expiryTime)) {
-    await authStore.refreshExpiredToken();
-  }
-
-  // Checking if current route is public
-  const isPublicRoute = PUBLIC_ROUTES.includes(to.path);
-
-  if (!authStore.isAuthenticated) {
-    if (to.path === ROUTES.app.home) {
-      return navigateTo(ROUTES.auth.login);
-    }
-
+  // Not authenticated
+  if (!isValid) {
     if (isPublicRoute) {
-      return;
+      return; // Allow access to public routes
     }
-
-    // Redirect ti login
-    return navigateTo(ROUTES.auth.login);
+    return navigateTo(ROUTES.auth.login); // Redirect to login
   }
 
-  // If user IS authenticated
-  else {
-    // Redirect to home page
-    if (isPublicRoute && to.path !== ROUTES.app.home) {
-      return navigateTo(ROUTES.app.home);
-    }
-
-    return;
+  // Authenticated - block auth pages
+  if (isAuthRoute) {
+    return navigateTo(ROUTES.app.home);
   }
 });

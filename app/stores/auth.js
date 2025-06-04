@@ -1,175 +1,93 @@
+// stores/auth.js
 import { defineStore } from "pinia";
-import { navigateTo } from "#app";
 import axios from "axios";
-import { getUserLoginApi, getUserRefreshTokenApi } from "~/services/api/auth/user";
 import { ROUTES } from "~/config/routes";
+import { getUserLoginApi, getUserRefreshTokenApi } from "~/services/api/auth/user";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
-    accessToken: null,
-    refreshToken: null,
+    isAuthenticated: false,
     loading: false,
     error: null,
-    rememberMe: false,
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.accessToken,
-    isLoading: (state) => state.loading,
     getUser: (state) => state.user,
     getError: (state) => state.error,
+    isLoading: (state) => state.loading,
   },
 
   actions: {
-    // Initialize auth from localStorage
-    initAuth() {
-      if (!process.client) {
-        return false;
-      }
+    // Clear error
+    clearError() {
+      this.error = null;
+    },
 
+    // Check session validity
+    async checkAuth() {
       try {
-        const token = localStorage.getItem("accessToken");
-        const refreshToken = localStorage.getItem("refreshToken");
-        const user = localStorage.getItem("user");
-        const rememberMe = localStorage.getItem("rememberMe") === "true";
-
-        if (token && user) {
-          this.accessToken = token;
-          this.refreshToken = refreshToken;
-          this.user = JSON.parse(user);
-          this.rememberMe = rememberMe;
-          return true;
-        }
-        return false;
+        const response = await axios.get('/api/auth/me', { 
+          withCredentials: true 
+        });
+        
+        this.user = response.data.user;
+        this.isAuthenticated = true;
+        return true;
       } catch (error) {
-        this.logout();
+        this.user = null;
+        this.isAuthenticated = false;
         return false;
       }
     },
 
-    // Login user
+    // Login
     async login(credentials) {
       this.loading = true;
       this.error = null;
 
       try {
-        const response = await axios.post(getUserLoginApi(), {
-          username: credentials.username,
-          password: credentials.password,
-          expiresInMins: 30,
+        const response = await axios.post('/api/auth/login', credentials, {
+          withCredentials: true
         });
 
-        const data = response.data;
-        const token = data.accessToken || data.token;
-
-        // Set state
-        this.accessToken = token;
-        this.refreshToken = data.refreshToken || null;
-        this.user = {
-          id: data.id,
-          username: data.username,
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-        };
-        this.rememberMe = credentials.remember_me || false;
-
-        // Store in localStorage with expiry time
-        if (process.client) {
-          localStorage.setItem("accessToken", token);
-          if (data.refreshToken) {
-            localStorage.setItem("refreshToken", data.refreshToken);
-          }
-          localStorage.setItem("user", JSON.stringify(this.user));
-          localStorage.setItem("rememberMe", String(this.rememberMe));
-          localStorage.setItem(
-            "expiryTime",
-            String(Date.now() + 30 * 60 * 1000)
-          );
+        // Check if login was successful
+        if (response.data && response.data.success && response.data.user) {
+          this.user = response.data.user;
+          this.isAuthenticated = true;
+          return { success: true };
+        } else {
+          throw new Error('Invalid response from server');
         }
 
-        return { success: true };
       } catch (error) {
-        this.error = error.message || "Login failed";
+        // Handle different types of errors
+        if (error.response) {
+          this.error = error.response.data?.message || error.response.data?.statusMessage || 'Login failed';
+        } 
+        
+        this.isAuthenticated = false;
+        this.user = null;
         throw error;
       } finally {
         this.loading = false;
       }
     },
 
-    // Refresh expired token
-    async refreshExpiredToken() {
-      const refreshToken = localStorage.getItem("refreshToken");
-      const rememberMe = JSON.parse(
-        localStorage.getItem("rememberMe") || "false"
-      );
-
-      if (!rememberMe || !refreshToken) {
-        this.clearAuthData();
-        return true; // Session expired, need logout
-      }
-
+    // Logout
+    async logout() {
       try {
-        const response = await axios.post(getUserRefreshTokenApi(), {
-          refreshToken: refreshToken,
-          expiresInMins: 30,
+        await axios.post('/api/auth/logout', {}, { 
+          withCredentials: true 
         });
-
-        const data = response.data;
-        const newToken = data.accessToken || data.token;
-
-        // Update state
-        this.accessToken = newToken;
-        if (data.refreshToken) {
-          this.refreshToken = data.refreshToken;
-        }
-
-        // Update localStorage
-        localStorage.setItem("accessToken", newToken);
-        if (data.refreshToken) {
-          localStorage.setItem("refreshToken", data.refreshToken);
-        }
-        localStorage.setItem(
-          "expiryTime",
-          String(Date.now() + 30 * 60 * 1000)
-        );
-
-        return false; // Session NOT expired, continue
       } catch (error) {
-        this.clearAuthData();
-        return true; // Session expired, need logout
+        return 
       }
-    },
-
-    // Clear auth data
-    clearAuthData() {
-      const itemsToRemove = [
-        "accessToken",
-        "refreshToken",
-        "user",
-        "rememberMe",
-        "expiryTime",
-      ];
-
-      itemsToRemove.forEach((item) => localStorage.removeItem(item));
-
+      
       this.user = null;
-      this.accessToken = null;
-      this.refreshToken = null;
-      this.rememberMe = false;
+      this.isAuthenticated = false;
       this.error = null;
-    },
-
-    // Logout user
-    logout() {
-      this.clearAuthData();
-      navigateTo(ROUTES.auth.login);
-    },
-
-    // Clear error
-    clearError() {
-      this.error = null;
-    },
-  },
+      await navigateTo(ROUTES.auth.login);
+    }
+  }
 });
