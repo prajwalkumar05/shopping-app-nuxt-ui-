@@ -1,29 +1,27 @@
-// plugins/auth.client.js
 export default defineNuxtPlugin(async (nuxtApp) => {
   // Only run on client-side
   if (process.server) return
 
-  const { initAuth, validateSession } = useAuth()
+  const { initAuth, validateSession } = useAuthEnhanced()
 
-  // Initialize auth when app is mounted
+  // Initialize auth when app is mounted (matches your current system)
   nuxtApp.hook("app:mounted", async () => {
     await initAuth()
   })
 
-  // Handle page visibility changes (when user switches tabs and comes back)
+  // Handle page visibility changes (matches your current system)
   const handleVisibilityChange = async () => {
     if (!document.hidden) {
-      // Page became visible, re-check auth status
       await validateSession()
     }
   }
 
-  // Handle focus events (when user clicks back to the window)
+  // Handle focus events (matches your current system)
   const handleFocus = async () => {
     await validateSession()
   }
 
-  // Add event listeners
+  // Add event listeners (matches your current system)
   if (process.client) {
     document.addEventListener("visibilitychange", handleVisibilityChange)
     window.addEventListener("focus", handleFocus)

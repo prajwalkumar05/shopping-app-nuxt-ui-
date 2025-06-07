@@ -102,23 +102,27 @@
 
 <script setup>
 import { reactive } from 'vue'
-import { useAuth } from '~/composables/useAuth'
 import { navigateTo } from '#app'
+
+// Disable auth middleware for login page
+definePageMeta({
+  auth: false
+})
 
 // Define component events
 const emit = defineEmits(['login-success', 'forgot-password'])
 
-// Get auth composable
-const { login, loading, error, clearError } = useAuth()
+// Get enhanced auth composable (matches your current API exactly)
+const { login, loading, error, clearError } = useAuthEnhanced()
 
-// Form state
+// Form state (matches your current form exactly)
 const formState = reactive({
   username: '',
   password: '',
   remember_me: false
 })
 
-// Form validation
+// Form validation (matches your current validation exactly)
 const validate = (state) => {
   const errors = []
 
@@ -143,7 +147,7 @@ const validate = (state) => {
   return errors
 }
 
-// Handle form submission
+// Handle form submission (matches your current logic exactly)
 const handleSubmit = async (event) => {
   try {
     clearError()
@@ -168,7 +172,7 @@ const handleSubmit = async (event) => {
   }
 }
 
-// Fill demo credentials
+// Fill demo credentials (matches your current demo function exactly)
 const fillDemo = () => {
   formState.username = 'emilys'
   formState.password = 'emilyspass'
