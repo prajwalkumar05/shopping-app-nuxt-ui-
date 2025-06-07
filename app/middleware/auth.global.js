@@ -1,48 +1,30 @@
 // middleware/auth.global.js
-import { ROUTES, PUBLIC_ROUTES } from "~/config/routes";
+export default defineNuxtRouteMiddleware(async (to) => {
+  // Skip on server-side
+  if (process.server) return
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  // Skip API routes and server-side
-  if (to.path.startsWith('/api/') || process.server) return;
+  const { loggedIn, validateSession } = useAuth()
 
+  const publicRoutes = ["/auth/login", "/auth/register"]
+  const isPublicRoute = publicRoutes.includes(to.path)
 
-  const authStore = useAuthStore();
-  
-  const isValid = await authStore.checkAuth();
-  
+  // Auth routes (login, register)
+  const authRoutes = ["/auth/login", "/auth/register"]
+  const isAuthRoute = authRoutes.includes(to.path)
 
+  if (loggedIn.value) {
+    const isValid = await validateSession()
 
-  const authRoutes = PUBLIC_ROUTES; 
-  const trulyPublicRoutes = [
-    ROUTES.products.productsList 
-  ];
-  
-  // Check route types
-  const isAuthRoute = authRoutes.includes(to.path);
-  const isTrulyPublic = trulyPublicRoutes.includes(to.path) || 
-                       to.path.startsWith('/products/'); 
-  
-
-  // NOT AUTHENTICATED
-  if (!isValid && !authStore.isAuthenticated) {
-    
-    // Allow only auth routes and truly public routes
-    if (isAuthRoute || isTrulyPublic) {
-      return;
+    if (!isValid && !isPublicRoute) {
+      return navigateTo("/auth/login")
     }
-    
-    return navigateTo(ROUTES.auth.login);
-  }
 
-  // AUTHENTICATED
-  if (isValid && authStore.isAuthenticated) {
-    // Block access to auth pages when authenticated
     if (isAuthRoute) {
-      return navigateTo(ROUTES.app.home);
+      return navigateTo("/")
     }
-    
-    return;
   }
-
-  await authStore.forceLogout('Mixed auth state detected');
-});
+  // User is not logged in
+  else if (!isPublicRoute) {
+    return navigateTo("/auth/login")
+  }
+})

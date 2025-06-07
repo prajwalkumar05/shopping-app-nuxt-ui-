@@ -1,133 +1,177 @@
 <template>
   <UForm
     :validate="validate"
-    :state="state"
-    class="space-y-2 flex flex-col gap-1"
-    @submit="onSubmit"
+    :state="formState"
+    class="space-y-4"
+    @submit="handleSubmit"
   >
-    <UFormField label="Username" name="username">
+    <UFormField label="Username" name="username" required>
       <UInput
-        v-model="state.username"
+        v-model="formState.username"
         placeholder="Enter your username"
         class="w-full"
         icon="i-heroicons-user"
+        :disabled="loading"
+        autocomplete="username"
       />
     </UFormField>
 
-    <UFormField label="Password" name="password">
+    <UFormField label="Password" name="password" required>
       <UInput
-        v-model="state.password"
+        v-model="formState.password"
         type="password"
         class="w-full"
         placeholder="Enter your password"
         icon="i-heroicons-lock-closed"
+        :disabled="loading"
+        autocomplete="current-password"
       />
     </UFormField>
 
     <div class="flex items-center justify-between">
-      <UCheckbox v-model="state.remember_me" label="Remember me" />
+      <UCheckbox
+        v-model="formState.remember_me"
+        label="Remember me"
+        :disabled="loading"
+      />
       <UButton
         variant="link"
         class="text-secondary"
         size="sm"
+        :disabled="loading"
         @click="$emit('forgot-password')"
       >
         Forgot password?
       </UButton>
     </div>
 
-    <!-- Test credentials info -->
+    <!-- Demo credentials info -->
     <div class="text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
-      <p><code class="bg-gray-200 px-1 rounded">emilys</code></p>
-      <p><code class="bg-gray-200 px-1 rounded">emilyspass</code></p>
+      <div class="flex items-center justify-between mb-2">
+        <p><strong>Demo credentials:</strong></p>
+        <UButton
+          size="xs"
+          variant="soft"
+          color="blue"
+          :disabled="loading"
+          @click="fillDemo"
+        >
+          Auto-fill
+        </UButton>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <p>Username: <code class="bg-gray-200 px-1 rounded">emilys</code></p>
+        <p>Password: <code class="bg-gray-200 px-1 rounded">emilyspass</code></p>
+      </div>
     </div>
 
-    <div
-      v-if="authStore.error"
-      class="text-red-500 text-sm bg-red-50 p-3 rounded-md"
-    >
-      {{ authStore.error }}
+    <!-- Error display -->
+    <UAlert
+      v-if="error"
+      color="red"
+      variant="soft"
+      :title="error"
+      :close-button="{ 
+        icon: 'i-heroicons-x-mark-20-solid', 
+        color: 'gray', 
+        variant: 'link' 
+      }"
+      @close="clearError"
+    />
+
+    <!-- Loading state info -->
+    <div v-if="loading" class="text-xs text-blue-600 bg-blue-50 p-2 rounded-md">
+      <div class="flex items-center">
+        <Icon name="i-heroicons-arrow-path" class="w-3 h-3 mr-1 animate-spin" />
+        Authenticating with DummyJSON API...
+      </div>
     </div>
 
+    <!-- Submit button -->
     <UButton
       type="submit"
       block
-      :loading="authStore.loading"
-      :disabled="authStore.loading"
+      :loading="loading"
+      :disabled="loading"
       class="btn-theme-primary"
     >
-      {{ authStore.loading ? "Logging in..." : "Login" }}
+      {{ loading ? "Signing in..." : "Sign In" }}
     </UButton>
   </UForm>
 </template>
 
 <script setup>
-import { useAuthStore } from "~/stores/auth";
-import { reactive } from "vue";
+import { reactive } from 'vue'
+import { useAuth } from '~/composables/useAuth'
+import { navigateTo } from '#app'
 
-const emit = defineEmits(["login-success", "forgot-password"]);
+// Define component events
+const emit = defineEmits(['login-success', 'forgot-password'])
 
-const authStore = useAuthStore();
-const toast = useToast();
-const router = useRouter();
+// Get auth composable
+const { login, loading, error, clearError } = useAuth()
 
-const state = reactive({
-  username: undefined,
-  password: undefined,
-  remember_me: false,
-});
+// Form state
+const formState = reactive({
+  username: '',
+  password: '',
+  remember_me: false
+})
 
+// Form validation
 const validate = (state) => {
-  const errors = [];
+  const errors = []
 
-  // Username validation
   if (!state.username) {
-    errors.push({ name: "username", message: "Username is required" });
+    errors.push({ name: "username", message: "Username is required" })
   } else if (state.username.length < 3) {
     errors.push({
       name: "username",
-      message: "Username must be at least 3 characters",
-    });
+      message: "Username must be at least 3 characters"
+    })
   }
 
-  // Password validation
   if (!state.password) {
-    errors.push({ name: "password", message: "Password is required" });
+    errors.push({ name: "password", message: "Password is required" })
   } else if (state.password.length < 6) {
     errors.push({
       name: "password",
-      message: "Password must be at least 6 characters",
-    });
+      message: "Password must be at least 6 characters"
+    })
   }
 
-  return errors;
-};
+  return errors
+}
 
-const onSubmit = async (event) => {
+// Handle form submission
+const handleSubmit = async (event) => {
   try {
-    authStore.clearError();
+    clearError()
 
-    const result = await authStore.login({
+    const credentials = {
       username: event.data.username,
       password: event.data.password,
-      remember_me: event.data.remember_me,
-    });
-
-    if (result.success) {
-      toast.add({
-        title: "Login Successful",
-        description: "Welcome back!",
-        color: "green",
-      });
-
-      await router.push("/");
+      remember_me: event.data.remember_me
     }
-  } catch (error) {
-    toast.add({
-      title: "Login Failed",
-      description: authStore.error || "Invalid credentials. Please try again.",
-      color: "red",
-    });
+    
+    const result = await login(credentials)
+    
+    if (result.success) {
+      emit('login-success', result.user)
+      
+      // Navigate to home page
+      await navigateTo('/', { replace: true })
+    }
+  } catch (err) {
+    console.error('Login failed:', err)
+    // Error is already set in the login function
   }
-};
+}
+
+// Fill demo credentials
+const fillDemo = () => {
+  formState.username = 'emilys'
+  formState.password = 'emilyspass'
+  formState.remember_me = false
+}
 </script>

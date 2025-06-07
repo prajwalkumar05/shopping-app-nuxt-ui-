@@ -39,7 +39,7 @@ import { useAuthStore } from "~/stores/auth";
 
 const { appName } = useRuntimeConfig().public
 
-const authStore = useAuthStore();
+const { loggedIn, user, logout } = useAuth()
 const isLogoutModalOpen = ref(false);
 const isLoggingOut = ref(false);
 
@@ -331,7 +331,7 @@ const items = ref([
 const handleLogout = async () => {
   try {
     isLoggingOut.value = true;
-    await authStore.logout();
+    logout()
 
     isLogoutModalOpen.value = false;
 
