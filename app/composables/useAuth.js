@@ -15,6 +15,25 @@ export const useAuthEnhanced = () => {
   const loggedIn = computed(() => status.value === "authenticated")
   const user = computed(() => userData.value)
 
+  // Store remember me preference
+  const setRememberMe = (remember) => {
+    if (process.client) {
+      if (remember) {
+        localStorage.setItem('auth.remember', 'true')
+      } else {
+        localStorage.removeItem('auth.remember')
+      }
+    }
+  }
+
+  // Get remember me preference
+  const getRememberMe = () => {
+    if (process.client) {
+      return localStorage.getItem('auth.remember') === 'true'
+    }
+    return false
+  }
+
   // Enhanced login function
   const login = async (credentials) => {
     loading.value = true
@@ -24,8 +43,11 @@ export const useAuthEnhanced = () => {
       const loginData = {
         username: credentials.username,
         password: credentials.password,
-        expiresInMins: credentials.remember ? 60 * 24 * 30 : 5, // 30 days or 5 mini
+        expiresInMins: credentials.remember ? 30 : 5, // 30 minutes or 5 minutes for testing
       }
+
+      // Store remember me preference
+      setRememberMe(credentials.remember)
 
       // Use @sidebase/nuxt-auth signIn
       const result = await baseSignIn(loginData, { redirect: false })
@@ -51,6 +73,11 @@ export const useAuthEnhanced = () => {
     loading.value = true
 
     try {
+      // Clear remember me preference on manual logout
+      if (reason === "manual") {
+        setRememberMe(false)
+      }
+
       //  @sidebase/nuxt-auth signOut
       await baseSignOut({ redirect: false })
 
@@ -75,6 +102,8 @@ export const useAuthEnhanced = () => {
       return false
     }
 
+    const rememberMe = getRememberMe()
+
     // Check if token is expired
     if (isTokenExpired(token.value)) {
       try {
@@ -84,12 +113,17 @@ export const useAuthEnhanced = () => {
         if (status.value === "authenticated" && token.value && !isTokenExpired(token.value)) {
           return true
         } else {
-          // Refresh failed, logout
-          await logout("expired")
+          // Only logout if remember me is not enabled
+          if (!rememberMe) {
+            await logout("expired")
+          }
           return false
         }
       } catch (err) {
-        await logout("expired")
+        // Only logout if remember me is not enabled
+        if (!rememberMe) {
+          await logout("expired")
+        }
         return false
       }
     }

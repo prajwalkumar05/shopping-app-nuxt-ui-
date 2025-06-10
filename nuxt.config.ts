@@ -42,15 +42,15 @@ export default defineNuxtConfig({
         type: "Bearer",
         cookieName: "auth.token",
         headerName: "Authorization",
-        maxAgeInSeconds: 300, // 5minits
+        maxAgeInSeconds: 30 * 60, 
         sameSiteAttribute: "lax",
-        httpOnlyCookieAttribute: false, // Keep false for client-side access
+        httpOnlyCookieAttribute: false, 
       },
 
       refreshToken: {
         signInResponseRefreshTokenPointer: "/refreshToken",
         cookieName: "auth.refresh-token",
-        maxAgeInSeconds: 60 * 60 * 24 * 30, // 30 days
+        maxAgeInSeconds: 30 * 60, 
         httpOnlyCookieAttribute: false,
       },
 

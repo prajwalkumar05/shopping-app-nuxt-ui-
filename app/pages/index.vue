@@ -4,7 +4,8 @@
   <div class="h-full flex flex-col">
     <div class="flex justify-center bg-primary">
       <div class="w-full max-w-[1200px] px-4 py-4">
-        <h1 class="text-2xl text-primary font-bold">Products</h1>
+        <h1 class="text-2xl text-primary font-bold">Products </h1>
+        <p class="text-primary">{{ token }}</p>
       </div>
     </div>
 
@@ -66,6 +67,7 @@ definePageMeta({
 
 const { products, loading, error, currentPage, totalPages, fetchProducts } =
   useProducts();
+  const { token } = useAuth()
 const productsPerPage = 12;
 
 const loadProducts = () => {
