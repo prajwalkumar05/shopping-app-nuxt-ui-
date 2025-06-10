@@ -1,7 +1,7 @@
 <template>
   <div class="flex-between px-12 z-[1000]">
     <div class="pages-title">
-      <h1 class="font-bold text-white">{{appName}}</h1>
+      <h1 class="font-bold text-white">{{ appName }}</h1>
     </div>
 
     <UNavigationMenu :items="items" class="flex-center flex-1 z-[1000]" />
@@ -35,11 +35,11 @@
 
 <script setup>
 import { ref } from "vue";
-import { useAuthStore } from "~/stores/auth";
 
 const { appName } = useRuntimeConfig().public
 
-const { loggedIn, user, logout } = useAuth()
+// 🔥 FIX: Use useAuthEnhanced instead of useAuth
+const { loggedIn, user, logout } = useAuthEnhanced()
 const isLogoutModalOpen = ref(false);
 const isLoggingOut = ref(false);
 
@@ -328,13 +328,18 @@ const items = ref([
   },
 ]);
 
+// 🔥 FIX: Updated logout handler to use async/await properly
 const handleLogout = async () => {
   try {
     isLoggingOut.value = true;
-    logout()
-
+    
+    // 🔥 FIX: Wait for logout to complete
+    await logout('manual')
+    
+    // Close the modal
     isLogoutModalOpen.value = false;
 
+    // Show success toast
     const toast = useToast();
     toast.add({
       title: "Logged out successfully",
@@ -343,6 +348,9 @@ const handleLogout = async () => {
       icon: "i-lucide-check-circle",
     });
   } catch (error) {
+    console.error('Logout error:', error);
+    
+    // Show error toast
     const toast = useToast();
     toast.add({
       title: "Logout failed",
@@ -355,9 +363,3 @@ const handleLogout = async () => {
   }
 };
 </script>
-
-<style>
-
-
-
-</style>

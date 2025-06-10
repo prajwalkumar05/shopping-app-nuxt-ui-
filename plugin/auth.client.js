@@ -1,27 +1,25 @@
+import { defineNuxtPlugin } from "#app"
+import { useAuthEnhanced } from "~/composables/authEnhanced"
+
 export default defineNuxtPlugin(async (nuxtApp) => {
   // Only run on client-side
   if (process.server) return
 
-  const { initAuth, validateSession } = useAuthEnhanced()
+  const { validateSession } = useAuthEnhanced()
 
-  // Initialize auth when app is mounted (matches your current system)
-  nuxtApp.hook("app:mounted", async () => {
-    await initAuth()
-  })
-
-  // Handle page visibility changes (matches your current system)
+  // page visibility changes for token validation
   const handleVisibilityChange = async () => {
     if (!document.hidden) {
       await validateSession()
     }
   }
 
-  // Handle focus events (matches your current system)
+  //  focus events for token validation
   const handleFocus = async () => {
     await validateSession()
   }
 
-  // Add event listeners (matches your current system)
+  // Add event listeners
   if (process.client) {
     document.addEventListener("visibilitychange", handleVisibilityChange)
     window.addEventListener("focus", handleFocus)

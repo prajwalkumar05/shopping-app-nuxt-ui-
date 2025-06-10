@@ -1,34 +1,36 @@
+import { defineNuxtRouteMiddleware, navigateTo, useAuthEnhanced } from "#imports"
+import { ROUTES, PUBLIC_ROUTES } from "~/config/routes"
+
 export default defineNuxtRouteMiddleware(async (to) => {
   // Skip on server-side
   if (process.server) return
 
   const { loggedIn, validateSession } = useAuthEnhanced()
 
-  // Public routes that don't require authentication
-  const publicRoutes = ["/auth/login", "/auth/register"]
-  const isPublicRoute = publicRoutes.includes(to.path)
+  // public routes
+  const isPublicRoute = PUBLIC_ROUTES.includes(to.path)
+  
+  // Auth routes - any route that starts with /auth
+  const isAuthRoute = to.path.startsWith('/auth')
 
-  // Auth routes (login, register)
-  const authRoutes = ["/auth/login", "/auth/register"]
-  const isAuthRoute = authRoutes.includes(to.path)
-
-  // Always validate session on route changes (matches your current system)
+  // If user is logged in
   if (loggedIn.value) {
+    // Always validate session on route changes
     const isValid = await validateSession()
 
-    // If session is invalid, user will be logged out by validateSession
+    // If session is invalid
     if (!isValid && !isPublicRoute) {
-      return navigateTo("/auth/login")
+      return navigateTo(ROUTES.auth.login) 
     }
 
-    // Redirect authenticated users away from auth pages
+    // Redirect home page
     if (isAuthRoute) {
-      return navigateTo("/")
+      return navigateTo(ROUTES.app.home) 
     }
   }
   // User is not logged in
   else if (!isPublicRoute) {
-    // Redirect to login for protected routes
-    return navigateTo("/auth/login")
+    // Redirect to login 
+    return navigateTo(ROUTES.auth.login) 
   }
 })

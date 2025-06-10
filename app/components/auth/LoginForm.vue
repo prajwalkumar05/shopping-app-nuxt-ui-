@@ -31,7 +31,7 @@
     <div class="flex items-center justify-between">
       <UCheckbox
         v-model="formState.remember_me"
-        label="Remember me"
+        label="Remember me (30 days)"
         :disabled="loading"
       />
       <UButton
@@ -104,25 +104,20 @@
 import { reactive } from 'vue'
 import { navigateTo } from '#app'
 
-// Disable auth middleware for login page
-definePageMeta({
-  auth: false
-})
-
 // Define component events
 const emit = defineEmits(['login-success', 'forgot-password'])
 
-// Get enhanced auth composable (matches your current API exactly)
+// Use enhanced auth composable
 const { login, loading, error, clearError } = useAuthEnhanced()
 
-// Form state (matches your current form exactly)
+// Form state
 const formState = reactive({
   username: '',
   password: '',
   remember_me: false
 })
 
-// Form validation (matches your current validation exactly)
+// Form validation
 const validate = (state) => {
   const errors = []
 
@@ -147,7 +142,7 @@ const validate = (state) => {
   return errors
 }
 
-// Handle form submission (matches your current logic exactly)
+// Handle form submission
 const handleSubmit = async (event) => {
   try {
     clearError()
@@ -155,7 +150,7 @@ const handleSubmit = async (event) => {
     const credentials = {
       username: event.data.username,
       password: event.data.password,
-      remember_me: event.data.remember_me
+      remember: event.data.remember_me
     }
     
     const result = await login(credentials)
@@ -172,7 +167,7 @@ const handleSubmit = async (event) => {
   }
 }
 
-// Fill demo credentials (matches your current demo function exactly)
+// Fill demo credentials
 const fillDemo = () => {
   formState.username = 'emilys'
   formState.password = 'emilyspass'
