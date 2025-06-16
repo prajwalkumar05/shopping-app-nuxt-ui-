@@ -2,7 +2,7 @@ import { defineNuxtPlugin } from "#app"
 import { useAuthEnhanced } from "~/composables/authEnhanced"
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  // Only run on client-side
+  // client-side
   if (process.server) return
 
   const { validateSession } = useAuthEnhanced()

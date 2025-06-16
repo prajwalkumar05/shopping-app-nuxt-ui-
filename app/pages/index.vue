@@ -6,6 +6,7 @@
       <div class="w-full max-w-[1200px] px-4 py-4">
         <h1 class="text-2xl text-primary font-bold">Products </h1>
         <p class="text-primary">{{ token }}</p>
+        {{ getRememberMe() }}
       </div>
     </div>
 
@@ -67,8 +68,28 @@ definePageMeta({
 
 const { products, loading, error, currentPage, totalPages, fetchProducts } =
   useProducts();
-  const { token } = useAuth()
+  // const { token } = useAuth()
 const productsPerPage = 12;
+
+const { token } = useAuthEnhanced()
+
+const getRememberMe = () => {
+  try {
+    const rememberCookie = useCookie('auth.remember', {
+      default: () => false,
+      decode: (value) => {
+        try {
+          return JSON.parse(atob(value))
+        } catch {
+          return false
+        }
+      }
+    })
+    return rememberCookie.value
+  } catch (error) {
+    return false
+  }
+}
 
 const loadProducts = () => {
   fetchProducts(currentPage.value, productsPerPage);

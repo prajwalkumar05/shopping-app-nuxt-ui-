@@ -1,140 +1,204 @@
-"use client"
+"use client";
 
-import { computed, ref } from "vue"
-import { navigateTo } from "#app"
-import { isTokenExpired } from "~/utils/jwt"
+import { computed, ref } from "vue";
+import { navigateTo } from "#app";
+import { isTokenExpired } from "~/utils/jwt";
 
 export const useAuthEnhanced = () => {
   // @sidebase/nuxt-auth composable
-  const { data: userData, status, token, signIn: baseSignIn, signOut: baseSignOut, refresh: baseRefresh } = useAuth()
+  const {
+    data: userData,
+    status,
+    token,
+    signIn: baseSignIn,
+    signOut: baseSignOut,
+    refresh: baseRefresh,
+  } = useAuth();
 
-  const loading = ref(false)
-  const error = ref(null)
+  const loading = ref(false);
+  const error = ref(null);
 
   // Computed properties
-  const loggedIn = computed(() => status.value === "authenticated")
-  const user = computed(() => userData.value)
+  const loggedIn = computed(() => status.value === "authenticated");
+  const user = computed(() => userData.value);
 
-  // Store remember me preference
+
+  const encode = (value) => {
+    try {
+      return btoa(JSON.stringify(value));
+    } catch (error) {
+      console.error("Failed to encode:", error);
+      return null;
+    }
+  };
+
+
+  const decode = (value) => {
+    try {
+      return JSON.parse(atob(value));
+    } catch (error) {
+      console.error("Failed to decode:", error);
+      return null;
+    }
+  };
+
+
   const setRememberMe = (remember) => {
     if (process.client) {
-      if (remember) {
-        localStorage.setItem('auth.remember', 'true')
-      } else {
-        localStorage.removeItem('auth.remember')
+      try {
+        if (remember) {
+          const rememberData = {
+            value: true,
+            timestamp: Date.now(),
+            expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
+          };
+          
+          // Encode the data 
+          const encodedData = encode(rememberData);
+          if (encodedData) {
+            localStorage.setItem("auth.remember", encodedData);
+          }
+        } else {
+          localStorage.removeItem("auth.remember");
+        }
+      } catch (error) {
+        console.error("Failed to set remember me:", error);
       }
     }
-  }
+  };
 
-  // Get remember me preference
+  // Get remember 
   const getRememberMe = () => {
-    if (process.client) {
-      return localStorage.getItem('auth.remember') === 'true'
+    if (!process.client) return false;
+
+    try {
+      const stored = localStorage.getItem("auth.remember");
+      if (!stored) return false;
+
+      // Decode the stored data
+      const rememberData = decode(stored);
+      if (!rememberData) {
+        localStorage.removeItem("auth.remember");
+        return false;
+      }
+      
+      // Check if expired
+      if (Date.now() > rememberData.expiresAt) {
+        localStorage.removeItem("auth.remember");
+        return false;
+      }
+
+      return rememberData.value || false;
+    } catch (error) {
+      console.error("Failed to get remember me:", error);
+      localStorage.removeItem("auth.remember");
+      return false;
     }
-    return false
-  }
+  };
 
   // Enhanced login function
   const login = async (credentials) => {
-    loading.value = true
-    error.value = null
+    loading.value = true;
+    error.value = null;
 
     try {
       const loginData = {
         username: credentials.username,
         password: credentials.password,
-        expiresInMins: credentials.remember ? 30 : 5, // 30 minutes or 5 minutes for testing
-      }
+        expiresInMins: credentials.remember ? 30 : 5,
+      };
 
-      // Store remember me preference
-      setRememberMe(credentials.remember)
+      // Store remember 
+      setRememberMe(credentials.remember);
 
-      // Use @sidebase/nuxt-auth signIn
-      const result = await baseSignIn(loginData, { redirect: false })
+      await baseSignIn(loginData, { redirect: false });
 
       if (status.value === "authenticated" && token.value) {
         return {
           success: true,
           user: userData.value,
-        }
+        };
       } else {
-        throw new Error("Authentication failed")
+        throw new Error("Authentication failed");
       }
     } catch (err) {
-      error.value = err.message || "Login failed"
-      throw err
+      error.value = err.message || "Login failed";
+      throw err;
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
+  };
 
   // Enhanced logout function
   const logout = async (reason = "manual") => {
-    loading.value = true
+    loading.value = true;
 
     try {
-      // Clear remember me preference on manual logout
       if (reason === "manual") {
-        setRememberMe(false)
+        setRememberMe(false);
       }
 
-      //  @sidebase/nuxt-auth signOut
-      await baseSignOut({ redirect: false })
-
-      if (reason === "expired") {
-        console.log("Session expired - logging out")
-      }
+      await baseSignOut({ redirect: false });
     } catch (err) {
-      console.error("Logout error:", err)
+      console.error("Logout error:", err);
     } finally {
-      loading.value = false
+      loading.value = false;
 
       // Navigate to login page
       if (process.client && window.location.pathname !== "/auth/login") {
-        await navigateTo("/auth/login", { replace: true })
+        await navigateTo("/auth/login", { replace: true });
       }
     }
-  }
+  };
 
-  // Validate session - check token expiration
+  // checking token expiration
   const validateSession = async () => {
     if (!loggedIn.value || !token.value) {
-      return false
+      return false;
     }
 
-    const rememberMe = getRememberMe()
+    const rememberMe = getRememberMe();
 
     // Check if token is expired
     if (isTokenExpired(token.value)) {
       try {
-        await baseRefresh()
+        await baseRefresh();
 
         // Check if refresh was successful
-        if (status.value === "authenticated" && token.value && !isTokenExpired(token.value)) {
-          return true
+        if (
+          status.value === "authenticated" &&
+          token.value &&
+          !isTokenExpired(token.value)
+        ) {
+          return true;
         } else {
           // Only logout if remember me is not enabled
           if (!rememberMe) {
-            await logout("expired")
+            await logout("expired");
           }
-          return false
+          return false;
         }
       } catch (err) {
         // Only logout if remember me is not enabled
         if (!rememberMe) {
-          await logout("expired")
+          await logout("expired");
         }
-        return false
+        return false;
       }
     }
 
-    return true
-  }
+    return true;
+  };
 
   // Clear error
   const clearError = () => {
-    error.value = null
-  }
+    error.value = null;
+  };
+
+  // Clear remember me from localStorage
+  const clearRememberMe = () => {
+    setRememberMe(false);
+  };
 
   return {
     // State
@@ -150,5 +214,10 @@ export const useAuthEnhanced = () => {
     logout,
     validateSession,
     clearError,
-  }
-}
+    clearRememberMe,
+
+    // Utilities
+    getRememberMe,
+    setRememberMe,
+  };
+};
