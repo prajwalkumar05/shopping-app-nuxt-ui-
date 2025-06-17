@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // public routes
   const isPublicRoute = PUBLIC_ROUTES.includes(to.path)
   
-  // Auth routes - any route that starts with /auth
+  // Auth routes 
   const isAuthRoute = to.path.startsWith('/auth')
 
   // If user is logged in

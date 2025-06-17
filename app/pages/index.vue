@@ -5,8 +5,8 @@
     <div class="flex justify-center bg-primary">
       <div class="w-full max-w-[1200px] px-4 py-4">
         <h1 class="text-2xl text-primary font-bold">Products </h1>
-        <p class="text-primary">{{ token }}</p>
-        {{ getRememberMe() }}
+        <!-- <p class="text-primary">{{ token }}</p>
+        {{ getRememberMe() }} -->
       </div>
     </div>
 

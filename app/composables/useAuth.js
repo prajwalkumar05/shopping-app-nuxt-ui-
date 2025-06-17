@@ -22,42 +22,11 @@ export const useAuthEnhanced = () => {
   const loggedIn = computed(() => status.value === "authenticated");
   const user = computed(() => userData.value);
 
-
-  const encode = (value) => {
-    try {
-      return btoa(JSON.stringify(value));
-    } catch (error) {
-      console.error("Failed to encode:", error);
-      return null;
-    }
-  };
-
-
-  const decode = (value) => {
-    try {
-      return JSON.parse(atob(value));
-    } catch (error) {
-      console.error("Failed to decode:", error);
-      return null;
-    }
-  };
-
-
   const setRememberMe = (remember) => {
     if (process.client) {
       try {
         if (remember) {
-          const rememberData = {
-            value: true,
-            timestamp: Date.now(),
-            expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days
-          };
-          
-          // Encode the data 
-          const encodedData = encode(rememberData);
-          if (encodedData) {
-            localStorage.setItem("auth.remember", encodedData);
-          }
+          localStorage.setItem("auth.remember", "true");
         } else {
           localStorage.removeItem("auth.remember");
         }
@@ -73,22 +42,7 @@ export const useAuthEnhanced = () => {
 
     try {
       const stored = localStorage.getItem("auth.remember");
-      if (!stored) return false;
-
-      // Decode the stored data
-      const rememberData = decode(stored);
-      if (!rememberData) {
-        localStorage.removeItem("auth.remember");
-        return false;
-      }
-      
-      // Check if expired
-      if (Date.now() > rememberData.expiresAt) {
-        localStorage.removeItem("auth.remember");
-        return false;
-      }
-
-      return rememberData.value || false;
+      return stored === "true";
     } catch (error) {
       console.error("Failed to get remember me:", error);
       localStorage.removeItem("auth.remember");
