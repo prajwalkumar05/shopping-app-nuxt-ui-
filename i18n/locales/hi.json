@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "home": "होम",
+    "about": "हमारे बारे में",
+    "contact": "संपर्क",
+    "dashboard": "डैशबोर्ड"
+  },
+  "auth": {
+    "login": "लॉगिन",
+    "logout": "लॉगआउट",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "remember": "मुझे याद रखें"
+  },
+  "common": {
+    "save": "सेव करें",
+    "cancel": "रद्द करें",
+    "loading": "लोड हो रहा है...",
+    "error": "कुछ गलत हुआ",
+    "success": "सफल",
+    "retry": "फिर कोशिश करें",
+    "switchLanguage": "भाषा बदलें"
+  },
+  "products": {
+    "title": "उत्पाद",
+    "noProducts": "कोई उत्पाद नहीं मिला",
+    "freeShipping": "मुफ्त शिपिंग",
+    "viewDetails": "विवरण देखें",
+    "addToCart": "कार्ट में जोड़ें",
+    "addedToCart": "कार्ट में जोड़ा गया",
+    "addedToCartDesc": "{product} आपके कार्ट में जोड़ा गया है",
+    "addToCartError": "आइटम कार्ट में जोड़ने में विफल",
+    "price": "कीमत",
+    "originalPrice": "मूल कीमत"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "dashboard": "Dashboard"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "remember": "Remember me"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Success",
+    "retry": "Try Again",
+    "switchLanguage": "Switch Language"
+  },
+  "products": {
+    "title": "Products",
+    "noProducts": "No Products Found",
+    "freeShipping": "Free Shipping",
+    "viewDetails": "View Details",
+    "addToCart": "Add to Cart",
+    "addedToCart": "Added to cart",
+    "addedToCartDesc": "{product} has been added to your cart",
+    "addToCartError": "Failed to add item to cart",
+    "price": "Price",
+    "originalPrice": "Original Price"
+  }
+}

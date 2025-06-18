@@ -9,7 +9,7 @@
         size="xs"
         class="bg-gray-100 text-gray-700 px-2 py-1"
       >
-        Free Shipping
+        {{ $t('products.freeShipping') }}
       </UBadge>
     </div>
 
@@ -42,10 +42,10 @@
           v-if="product.originalPrice"
           class="text-sm text-gray-300 line-through"
         >
-          ₹{{ product.originalPrice }}
+          {{ formatPrice(product.originalPrice) }}
         </span>
         <span class="text-lg font-semibold text-black">
-          ₹{{ product.price }}
+          {{ formatPrice(product.price) }}
         </span>
       </div>
 
@@ -53,7 +53,7 @@
         <UButton
           size="sm"
           color="primary"
-          label="View Details"
+          :label="$t('products.viewDetails')"
           class="btn-theme-primary"
           @click="viewProduct"
         />
@@ -66,6 +66,7 @@
           :loading="addingToCart"
           :disabled="addingToCart"
           @click="addToCart"
+          :title="$t('products.addToCart')"
         />
       </div>
     </div>
@@ -85,33 +86,47 @@ const props = defineProps({
   },
 });
 
+// Composables
+const { t } = useI18n()
 const cartStore = useCartStore();
+const toast = useToast();
+
+// Reactive data
 const isWishlisted = ref(false);
 const addingToCart = ref(false);
+
+// Methods
+const formatPrice = (price) => {
+  // You can customize this based on locale
+  return `₹${price}`;
+};
 
 const addToCart = async () => {
   try {
     addingToCart.value = true;
 
-
-    // Add 2-second loading delay
+    // Add 1-second loading delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
+    
     cartStore.addItem(props.product);
-    const toast = useToast();
+    
     toast.add({
-      title: "Added to cart",
-      description: `${props.product.title} has been added to your cart`,
+      title: t('products.addedToCart'),
+      description: t('products.addedToCartDesc', { product: props.product.title }),
       icon: "i-heroicons-check-circle",
       color: "green",
     });
+    
   } catch (error) {
-    const toast = useToast();
+    console.error('Add to cart error:', error);
+    
     toast.add({
-      title: "Error",
-      description: "Failed to add item to cart",
+      title: t('common.error'),
+      description: t('products.addToCartError'),
       icon: "i-heroicons-x-circle",
       color: "red",
     });
+    
   } finally {
     addingToCart.value = false;
   }

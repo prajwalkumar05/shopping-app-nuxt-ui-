@@ -7,6 +7,7 @@
     <UNavigationMenu :items="items" class="flex-center flex-1 z-[1000]" />
 
     <div class="flex-center">
+       <LangSwitcher />
       <CartDrawer />
       <UButton
         icon="i-lucide-log-out"

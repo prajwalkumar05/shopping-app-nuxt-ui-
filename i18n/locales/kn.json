@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "home": "ಮುಖ್ಯಪುಟ",
+    "about": "ನಮ್ಮ ಬಗ್ಗೆ",
+    "contact": "ಸಂಪರ್ಕಿಸಿ",
+    "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್"
+  },
+  "auth": {
+    "login": "ಲಾಗಿನ್",
+    "logout": "ಲಾಗ್ಔಟ್",
+    "email": "ಇಮೇಲ್",
+    "password": "ಪಾಸ್‌ವರ್ಡ್",
+    "remember": "ನನ್ನನ್ನು ನೆನಪಿಡಿ"
+  },
+  "common": {
+    "save": "ಉಳಿಸಿ",
+    "cancel": "ರದ್ದುಮಾಡಿ",
+    "loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+    "error": "ಏನೋ ತಪ್ಪಾಗಿದೆ",
+    "success": "ಯಶಸ್ವಿ",
+    "retry": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+    "switchLanguage": "ಭಾಷೆ ಬದಲಾಯಿಸಿ"
+  },
+  "products": {
+    "title": "ಉತ್ಪನ್ನಗಳು",
+    "noProducts": "ಯಾವುದೇ ಉತ್ಪನ್ನಗಳು ಕಂಡುಬಂದಿಲ್ಲ",
+    "freeShipping": "ಉಚಿತ ಶಿಪ್ಪಿಂಗ್",
+    "viewDetails": "ವಿವರ ನೋಡಿ",
+    "addToCart": "ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ",
+    "addedToCart": "ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಲಾಗಿದೆ",
+    "addedToCartDesc": "{product} ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಲಾಗಿದೆ",
+    "addToCartError": "ಐಟಂ ಅನ್ನು ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ",
+    "price": "ಬೆಲೆ",
+    "originalPrice": "ಮೂಲ ಬೆಲೆ"
+  }
+}
