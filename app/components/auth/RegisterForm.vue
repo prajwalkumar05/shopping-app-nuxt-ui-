@@ -67,7 +67,6 @@
       type="submit"
       block
       :loading="loading"
-      class="btn-theme-primary e"
     >
       Create Account
     </UButton>

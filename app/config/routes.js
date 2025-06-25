@@ -1,5 +1,3 @@
-// ~/constants/routes.js
-
 export const ROUTES = {
   // Auth
   auth: {
@@ -14,15 +12,16 @@ export const ROUTES = {
 
   // Products
   products: {
-    productsList:'/products',
+    productsList: '/products',
     details: '/products/[id]'
   }
 }
 
-// Dynamic route 
 export const DYNAMIC_ROUTES = {
-  products :{
-    productDetails: (id) => `/products/${id}`
+  products: {
+    productDetails: (id, locale = 'en') => {
+      return locale === 'en' ? `/products/${id}` : `/${locale}/products/${id}`
+    }
   }
 }
 
@@ -31,4 +30,3 @@ export const PUBLIC_ROUTES = [
   ROUTES.auth.login,
   ROUTES.auth.register,
 ]
-

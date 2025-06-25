@@ -1,21 +1,19 @@
+<!-- layouts/default.vue -->
 <template>
-  <div class="h-screen flex flex-col overflow-hidden">
-    <Navbar />
-    <main class="bg-[#F4F2EE] flex-1  overflow-hidden">
+  <div class="h-screen overflow-hidden bg-primary transition-all duration-300">
+    <Navbar>
       <slot />
-    </main>
-    <UNotifications />
+    </Navbar>
   </div>
 </template>
 
 <script setup>
 
-</script>
 
+</script>
 
 <style scoped>
 :deep(*::-webkit-scrollbar) {
   display: none;
 }
-
 </style>

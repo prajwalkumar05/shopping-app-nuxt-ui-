@@ -1,9 +1,11 @@
+/* assets/css/main.css */
 @import "tailwindcss";
 @import "@nuxt/ui";
 @import "./utils/flex.css";
 
-
+/* ===== TAILWIND THEME CONFIGURATION ===== */
 @theme {
+  /* Core Colors */
   --color-primary: #086972;
   --color-secondary: #086972;
   --color-tertiary: #6741d9;
@@ -12,88 +14,70 @@
   --color-warning: #fcc419;
   --color-error: #c92a2a;
 
+  /* Font System */
   --font-sans: "Inter", "Helvetica Neue", sans-serif;
-
-  --font-size-2xs: 1.0rem;    
-  --font-size-xs: 1.2rem;     
-  --font-size-sm: 1.4rem;     
-  --font-size-base: 1.6rem;   
-  --font-size-lg: 1.8rem;     
-  --font-size-xl: 2.0rem;    
-
+  --font-size-2xs: 1.0rem;
+  --font-size-xs: 1.2rem;
+  --font-size-sm: 1.4rem;
+  --font-size-base: 1.6rem;
+  --font-size-lg: 1.8rem;
+  --font-size-xl: 2.0rem;
 }
 
+/* ===== THEME SYSTEM ===== */
 :root {
-  --ui-primary: #086972;
-  --ui-secondary: #086972;
+  /* Dynamic Theme Colors */
+  --theme-primary: #086972;
+  --ui-primary: var(--theme-primary);
 
-  /* Background Colors */
+  /* Light Mode Colors */
   --bg-primary: #f4f2ee;
-  --bg-secondary: #fff;
-  --bg-white: #ffffff;
-  --bg-theme: #086972;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
 
-  /* Text Colors */
-  --text-primary: #000;
-  --text-secondary: #333;
-  --text-white: #fff;
-  --text-theme: #086972;
-
+  /* Spacing */
   --spacing-medium: 10px;
   --spacing-large: 20px;
   --spacing-xlarge: 30px;
 }
 
-.bg-primary {
-  background-color: var(--bg-primary);
-}
-.bg-secondary {
-  background-color: var(--bg-secondary);
-}
-.bg-theme {
-  background-color: var(--bg-theme);
+/* Theme Color Variations */
+[data-theme="teal"] { --theme-primary: #086972; }
+[data-theme="red"] { --theme-primary: #f06595; }
+[data-theme="purple"] { --theme-primary: #845ef7; }
+[data-theme="blue"] { --theme-primary: #339af0; }
+
+/* Dark Mode */
+.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
 }
 
-.text-primary {
-  color: var(--text-primary);
-}
-.text-secondary {
-  color: var(--text-secondary);
-}
-.text-white {
-  color: var(--text-white);
-}
-.text-theme {
-  color: var(--text-theme);
-}
+/* ===== UTILITY CLASSES ===== */
+/* Background Utilities */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-card { background-color: var(--bg-card); }
+.bg-theme { background-color: var(--theme-primary); }
 
-/* Custom Button Styles */
-.btn-theme-primary {
-  background-color: var(--ui-primary);
-  color: var(--text-white);
-  border-color: var(--ui-primary);
-}
+/* Text Utilities */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-theme { color: var(--theme-primary); }
 
-.btn-theme-outline {
-  background-color: transparent;
-  color: var(--ui-primary);
-  border-color: var(--ui-primary);
-}
+/* Border Utilities */
+.border-theme { border-color: var(--border-color); }
+.border-theme-primary { border-color: var(--theme-primary); }
 
-/* Spacing Classes - Medium */
-.mt-medium {
-  margin-top: var(--spacing-medium);
-}
-.mb-medium {
-  margin-bottom: var(--spacing-medium);
-}
-.ml-medium {
-  margin-left: var(--spacing-medium);
-}
-.mr-medium {
-  margin-right: var(--spacing-medium);
-}
-.m-medium {
-  margin: var(--spacing-medium);
-  font-family:cursive;
-}
+
+

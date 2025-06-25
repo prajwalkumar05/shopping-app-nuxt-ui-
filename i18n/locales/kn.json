@@ -32,5 +32,42 @@
     "addToCartError": "ಐಟಂ ಅನ್ನು ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ",
     "price": "ಬೆಲೆ",
     "originalPrice": "ಮೂಲ ಬೆಲೆ"
+  },
+  "cart": {
+    "cart": "ಕಾರ್ಟ್",
+    "myCart": "ನನ್ನ ಕಾರ್ಟ್",
+    "emptyCart": "ನಿಮ್ಮ ಕಾರ್ಟ್ ಖಾಲಿಯಾಗಿದೆ",
+    "emptyCartMessage": "ಪ್ರಾರಂಭಿಸಲು ಕೆಲವು ಐಟಂಗಳನ್ನು ಸೇರಿಸಿ",
+    "continueShopping": "ಶಾಪಿಂಗ್ ಮುಂದುವರಿಸಿ",
+    "total": "ಒಟ್ಟು"
+  },
+  "product": {
+    "product": "ಉತ್ಪನ್ನ",
+    "reviews": "ವಿಮರ್ಶೆಗಳು",
+    "inStock": "ಸ್ಟಾಕ್‌ನಲ್ಲಿದೆ",
+    "outOfStock": "ಸ್ಟಾಕ್‌ನಲ್ಲಿಲ್ಲ",
+    "itemsAvailable": "ಐಟಂಗಳು ಲಭ್ಯವಿದೆ",
+    "quantity": "ಪ್ರಮಾಣ",
+    "description": "ಉತ್ಪನ್ನದ ವಿವರಣೆ",
+    "adding": "ಸೇರಿಸಲಾಗುತ್ತಿದೆ...",
+    "outOfStockMessage": "ಈ ಉತ್ಪನ್ನವು ಪ್ರಸ್ತುತ ಸ್ಟಾಕ್‌ನಲ್ಲಿಲ್ಲ",
+    "notFound": "ಉತ್ಪನ್ನ ಕಂಡುಬಂದಿಲ್ಲ",
+    "notFoundMessage": "ವಿನಂತಿಸಿದ ಉತ್ಪನ್ನ ಕಂಡುಬರಲಿಲ್ಲ."
+  },
+  "sidebar": {
+    "men": "ಪುರುಷರು",
+    "women": "ಮಹಿಳೆಯರು",
+    "electronics": "ಎಲೆಕ್ಟ್ರಾನಿಕ್ಸ್",
+    "sale": "ಸೇಲ್",
+    "hot": "ಹಾಟ್",
+    "logout": "ಲಾಗ್ಔಟ್",
+    "confirmLogout": "ಲಾಗ್ಔಟ್ ದೃಢೀಕರಿಸಿ",
+    "logoutMessage": "ನೀವು ನಿಜವಾಗಿಯೂ ಲಾಗ್ಔಟ್ ಮಾಡಲು ಬಯಸುವಿರಾ?",
+    "cartOpened": "ಕಾರ್ಟ್ ತೆರೆಯಲಾಗಿದೆ",
+    "cartItems": "ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲಿ {count} ಐಟಂಗಳಿವೆ",
+    "logoutSuccess": "ಯಶಸ್ವಿಯಾಗಿ ಲಾಗ್ಔಟ್ ಆಗಿದೆ",
+    "logoutSuccessMessage": "ನೀವು ನಿಮ್ಮ ಖಾತೆಯಿಂದ ಲಾಗ್ಔಟ್ ಆಗಿದ್ದೀರಿ",
+    "logoutFailed": "ಲಾಗ್ಔಟ್ ವಿಫಲವಾಗಿದೆ",
+    "logoutFailedMessage": "ಲಾಗ್ಔಟ್ ಮಾಡುವಲ್ಲಿ ದೋಷವಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
   }
 }

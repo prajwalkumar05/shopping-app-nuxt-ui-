@@ -32,5 +32,42 @@
     "addToCartError": "Failed to add item to cart",
     "price": "Price",
     "originalPrice": "Original Price"
+  },
+  "cart": {
+    "cart": "Cart",
+    "myCart": "My Cart",
+    "emptyCart": "Your cart is empty",
+    "emptyCartMessage": "Add some items to get started",
+    "continueShopping": "Continue Shopping",
+    "total": "Total"
+  },
+  "product": {
+    "product": "Product",
+    "reviews": "reviews",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "itemsAvailable": "items available",
+    "quantity": "Quantity",
+    "description": "Product description",
+    "adding": "Adding...",
+    "outOfStockMessage": "This product is currently out of stock",
+    "notFound": "Product Not Found",
+    "notFoundMessage": "The requested product could not be found."
+  },
+  "sidebar": {
+    "men": "Men",
+    "women": "Women",
+    "electronics": "Electronics",
+    "sale": "Sale",
+    "hot": "Hot",
+    "logout": "Logout",
+    "confirmLogout": "Confirm Logout",
+    "logoutMessage": "Are you sure you want to logout?",
+    "cartOpened": "Cart Opened",
+    "cartItems": "You have {count} items in your cart",
+    "logoutSuccess": "Logged out successfully",
+    "logoutSuccessMessage": "You have been logged out of your account",
+    "logoutFailed": "Logout failed",
+    "logoutFailedMessage": "There was an error logging out. Please try again."
   }
 }

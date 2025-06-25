@@ -4,10 +4,7 @@
     <USlideover
       v-model="cartStore.isOpen"
       side="right"
-      :ui="{
-        body: 'bg-primary',
-        background: 'bg-primary',
-      }"
+      :ui="slideoverUI"
     >
       <UButton
         icon="i-heroicons-shopping-cart"
@@ -15,7 +12,7 @@
         class="relative mr-medium"
         @click="cartStore.toggleCart()"
       >
-        Cart
+        {{ $t('cart.cart') }}
         <UBadge
           v-if="cartStore.totalItems > 0"
           :label="cartStore.totalItems.toString()"
@@ -28,7 +25,7 @@
         <div class="flex flex-col h-full">
           <div class="flex-between py-2 border-b">
             <div class="flex">
-              <h2 class="text-xl text-primary font-semibold">My Cart</h2>
+              <h2 class="text-xl text-primary font-semibold">{{ $t('cart.myCart') }}</h2>
               <p class="text-sm text-primary">({{ cartStore.totalItems }})</p>
             </div>
           </div>
@@ -39,7 +36,7 @@
               <div
                 v-for="item in cartStore.items"
                 :key="item.id"
-                class="flex gap-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                class="flex gap-4 p-4 border rounded-lg bg-card hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <div class="flex-shrink-0">
                   <img
@@ -117,27 +114,35 @@
                 class="w-16 h-16 text-primary mx-auto mb-4"
               />
               <h3 class="text-lg font-medium text-primary mb-2">
-                Your cart is empty
+                {{ $t('cart.emptyCart') }}
               </h3>
               <p class="text-primary text-sm mb-6">
-                Add some items to get started
+                {{ $t('cart.emptyCartMessage') }}
               </p>
               <UButton
-                label="Continue Shopping"
+                :label="$t('cart.continueShopping')"
                 class="btn-theme-primary"
                 @click="cartStore.setCartOpen(false)"
               />
             </div>
           </div>
 
-          <div v-if="cartStore.items.length > 0" class="border-t p-6 space-y-4">
+          <div v-if="cartStore.items.length > 0" class="border-t border-theme p-6 space-y-4 bg-secondary">
             <!-- Total -->
             <div class="flex-between text-lg">
-              <span class="font-semibold text-primary">Total:</span>
+              <span class="font-semibold text-primary">{{ $t('cart.total') }}:</span>
               <span class="font-bold text-primary"
                 >₹{{ cartStore.totalPrice.toFixed(2) }}</span
               >
             </div>
+            
+            <!-- Checkout Button -->
+            <UButton
+              :label="$t('cart.checkout')"
+              class="btn-theme-primary w-full"
+              size="lg"
+              @click="checkout"
+            />
           </div>
         </div>
       </template>
@@ -149,6 +154,7 @@
 import { useCartStore } from "~/stores/cart";
 import { onMounted, onUnmounted } from "vue";
 
+const { t } = useI18n()
 const cartStore = useCartStore();
 
 const viewCart = () => {

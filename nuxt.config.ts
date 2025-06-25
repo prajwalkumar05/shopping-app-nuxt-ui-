@@ -1,7 +1,21 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  modules: ["@nuxt/ui", "@pinia/nuxt", "@sidebase/nuxt-auth", "@nuxtjs/i18n"],
+  modules: ["@nuxt/ui", "@pinia/nuxt", "@sidebase/nuxt-auth", "@nuxtjs/i18n","@vueuse/nuxt"],
+
+  // Nuxt UI configuration with theme colors
+  ui: {
+    global: true,
+    icons: ['lucide', 'heroicons'],
+    safelistColors: ['primary', 'red', 'orange', 'green', 'blue', 'pink', 'purple', 'teal']
+  },
+
+  // Color mode configuration
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+    classSuffix: ''
+  },
 
   i18n: {
     locales: [
@@ -40,6 +54,28 @@ export default defineNuxtConfig({
   },
 
   css: ["~/assets/css/main.css"],
+
+  // App configuration with theme script
+  app: {
+    head: {
+      htmlAttrs: {
+        class: 'light'
+      },
+      meta: [
+        { name: 'color-scheme', content: 'light dark' }
+      ],
+      script: [
+      {
+        innerHTML: `
+          const t=(document.cookie.match(/app-theme=([^;]+)/)||[])[1]||'teal';
+          const c={teal:'#086972',red:'#f06595',purple:'#845ef7',blue:'#339af0'};
+          document.documentElement.style.setProperty('--theme-primary',c[t]);
+        `,
+        type: 'text/javascript'
+      }
+    ]
+    }
+  },
 
   auth: {
     baseURL: "https://dummyjson.com/auth",

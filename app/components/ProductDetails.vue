@@ -5,11 +5,11 @@
         <!-- Breadcrumb -->
         <nav class="text-sm text-secondary mb-6">
           <NuxtLink to="/" class="hover:text-primary cursor-pointer"
-            >Products</NuxtLink
+            >{{ $t('products.title') }}</NuxtLink
           >
           <span class="mx-2">/</span>
           <span class="text-primary font-medium">{{
-            product?.title || "Product"
+            product?.title || $t('product.product')
           }}</span>
         </nav>
 
@@ -75,7 +75,7 @@
                 >{{ product.rating.toFixed(1) }}/5.0</span
               >
               <span class="text-blue-600 text-sm underline cursor-pointer"
-                >({{ product.reviews?.length || 0 }} reviews)</span
+                >({{ product.reviews?.length || 0 }} {{ $t('product.reviews') }})</span
               >
             </div>
 
@@ -96,16 +96,16 @@
               >
                 {{
                   product.availabilityStatus ||
-                  (product.stock > 0 ? "In Stock" : "Out of Stock")
+                  (product.stock > 0 ? $t('product.inStock') : $t('product.outOfStock'))
                 }}
               </span>
               <span v-if="product.stock" class="text-secondary text-sm ml-2">
-                ({{ product.stock }} items available)
+                ({{ product.stock }} {{ $t('product.itemsAvailable') }})
               </span>
             </div>
 
             <div v-if="product.stock > 0" class="flex items-center gap-3">
-              <span class="text-secondary text-sm">Quantity:</span>
+              <span class="text-secondary text-sm">{{ $t('product.quantity') }}:</span>
               <div class="flex items-center gap-2">
                 <button
                   @click="decreaseQuantity"
@@ -129,7 +129,7 @@
 
             <div class="border-t border-b border-gray-200 py-4">
               <h3 class="font-medium text-primary text-base mb-3">
-                Product description
+                {{ $t('product.description') }}
               </h3>
 
               <div class="text-secondary text-sm leading-relaxed">
@@ -138,17 +138,17 @@
             </div>
 
             <div v-if="product.stock > 0" class="flex gap-3 pt-4">
-              <button
-                @click="addToCart"
-                :disabled="isAddingToCart"
-                class="btn-theme-primary w-full py-3 px-6 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 flex-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <div
-                  v-if="isAddingToCart"
-                  class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
-                ></div>
-                <span>{{ isAddingToCart ? "Adding..." : "Add to cart" }}</span>
-              </button>
+              <UButton
+              @click="addToCart"
+              :disabled="isAddingToCart"
+              :loading="isAddingToCart"
+              color="primary"
+              size="lg"
+              block
+              class="py-3"
+            >
+              {{ isAddingToCart ? $t('product.adding') : $t('products.addToCart') }}
+            </UButton>
             </div>
 
             <!-- Out of Stock Message -->
@@ -157,7 +157,7 @@
                 class="bg-red-50 border border-red-200 rounded-lg p-4 text-center"
               >
                 <p class="text-red-600 font-medium">
-                  This product is currently out of stock
+                  {{ $t('product.outOfStockMessage') }}
                 </p>
               </div>
             </div>
@@ -167,10 +167,10 @@
         <!-- No Product Found -->
         <div v-else class="flex-col-center py-20">
           <h2 class="text-xl font-semibold text-primary mb-2">
-            Product Not Found
+            {{ $t('product.notFound') }}
           </h2>
           <p class="text-secondary">
-            The requested product could not be found.
+            {{ $t('product.notFoundMessage') }}
           </p>
         </div>
       </div>
@@ -180,6 +180,8 @@
 
 <script setup>
 import { ref, watch } from "vue";
+
+const { t } = useI18n()
 
 // Props
 const props = defineProps({

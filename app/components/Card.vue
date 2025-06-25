@@ -1,20 +1,22 @@
 <template>
   <div
-    class="bg-white rounded-lg shadow-xs border border-gray-200 overflow-hidden hover:shadow-sm transition-shadow duration-200 relative group"
+    class="bg-card rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 relative group"
   >
+    <!-- Free Shipping Badge -->
     <div v-if="product.freeShipping" class="absolute top-2 left-2 z-10">
       <UBadge
         color="gray"
         variant="solid"
         size="xs"
-        class="bg-gray-100 text-gray-700 px-2 py-1"
+        class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 transition-colors duration-300"
       >
         {{ $t('products.freeShipping') }}
       </UBadge>
     </div>
 
+    <!-- Product Image -->
     <div
-      class="aspect-square bg-gray-50 flex-center p-2 cursor-pointer"
+      class="aspect-square bg-gray-50 dark:bg-gray-700 flex-center p-2 cursor-pointer transition-colors duration-300"
       @click="viewProduct"
     >
       <img
@@ -24,10 +26,11 @@
       />
     </div>
 
+    <!-- Product Info -->
     <div class="p-4">
       <!-- Product Name -->
       <h3
-        class="text-sm font-medium text-black mb-2 line-clamp-2 cursor-pointer"
+        class="text-sm font-medium text-primary mb-2 line-clamp-2 cursor-pointer transition-colors duration-300"
         @click="viewProduct"
       >
         {{
@@ -37,24 +40,25 @@
         }}
       </h3>
 
+      <!-- Product Price -->
       <div class="mb-2">
         <span
           v-if="product.originalPrice"
-          class="text-sm text-gray-300 line-through"
+          class="text-sm text-muted line-through mr-2 transition-colors duration-300"
         >
           {{ formatPrice(product.originalPrice) }}
         </span>
-        <span class="text-lg font-semibold text-black">
+        <span class="text-lg font-semibold text-primary transition-colors duration-300">
           {{ formatPrice(product.price) }}
         </span>
       </div>
 
+      <!-- Action Buttons -->
       <div class="flex-between gap-2">
         <UButton
           size="sm"
           color="primary"
           :label="$t('products.viewDetails')"
-          class="btn-theme-primary"
           @click="viewProduct"
         />
         <UButton
@@ -62,7 +66,6 @@
           size="sm"
           color="primary"
           variant="outline"
-          class="btn-theme-outline"
           :loading="addingToCart"
           :disabled="addingToCart"
           @click="addToCart"
@@ -76,8 +79,6 @@
 <script setup>
 import { useCartStore } from "~/stores/cart";
 import { DYNAMIC_ROUTES } from '~/config/routes'
-import { ref } from "vue";
-import { navigateTo } from "#app";
 
 const props = defineProps({
   product: {
@@ -97,7 +98,6 @@ const addingToCart = ref(false);
 
 // Methods
 const formatPrice = (price) => {
-  // You can customize this based on locale
   return `₹${price}`;
 };
 
@@ -132,7 +132,11 @@ const addToCart = async () => {
   }
 };
 
+const { locale } = useI18n()
+
+
 const viewProduct = () => {
-  navigateTo(DYNAMIC_ROUTES.products.productDetails(props.product.id));
+  navigateTo(DYNAMIC_ROUTES.products.productDetails(props.product.id, locale.value));
 };
 </script>
+

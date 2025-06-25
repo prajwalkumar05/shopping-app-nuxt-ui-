@@ -32,5 +32,42 @@
     "addToCartError": "आइटम कार्ट में जोड़ने में विफल",
     "price": "कीमत",
     "originalPrice": "मूल कीमत"
+  },
+  "cart": {
+    "cart": "कार्ट",
+    "myCart": "मेरा कार्ट",
+    "emptyCart": "आपका कार्ट खाली है",
+    "emptyCartMessage": "शुरू करने के लिए कुछ आइटम जोड़ें",
+    "continueShopping": "खरीदारी जारी रखें",
+    "total": "कुल"
+  },
+  "product": {
+    "product": "उत्पाद",
+    "reviews": "समीक्षाएं",
+    "inStock": "स्टॉक में",
+    "outOfStock": "स्टॉक में नहीं",
+    "itemsAvailable": "आइटम उपलब्ध",
+    "quantity": "मात्रा",
+    "description": "उत्पाद विवरण",
+    "adding": "जोड़ा जा रहा है...",
+    "outOfStockMessage": "यह उत्पाद वर्तमान में स्टॉक में नहीं है",
+    "notFound": "उत्पाद नहीं मिला",
+    "notFoundMessage": "अनुरोधित उत्पाद नहीं मिल सका।"
+  },
+  "sidebar": {
+    "men": "पुरुष",
+    "women": "महिला",
+    "electronics": "इलेक्ट्रॉनिक्स",
+    "sale": "सेल",
+    "hot": "हॉट",
+    "logout": "लॉगआउट",
+    "confirmLogout": "लॉगआउट की पुष्टि करें",
+    "logoutMessage": "क्या आप वाकई लॉगआउट करना चाहते हैं?",
+    "cartOpened": "कार्ट खोला गया",
+    "cartItems": "आपके कार्ट में {count} आइटम हैं",
+    "logoutSuccess": "सफलतापूर्वक लॉगआउट हो गए",
+    "logoutSuccessMessage": "आप अपने खाते से लॉगआउट हो गए हैं",
+    "logoutFailed": "लॉगआउट विफल",
+    "logoutFailedMessage": "लॉगआउट करने में त्रुटि हुई। कृपया पुनः प्रयास करें।"
   }
 }

@@ -1,366 +1,236 @@
+<!-- components/Sidebar.vue -->
 <template>
-  <div class="flex-between px-12 z-[1000]">
-    <div class="pages-title">
-      <h1 class="font-bold text-white">{{ appName }}</h1>
+  <div class="flex h-screen bg-primary transition-all duration-300">
+    <!-- Sidebar -->
+    <div :class="[
+      'bg-theme shadow-lg transition-all duration-300 ease-in-out flex flex-col relative z-[1001]',
+      isCollapsed ? 'w-16' : 'w-72'
+    ]">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b border-white/20">
+        <h1 v-if="!isCollapsed" class="font-bold text-white">{{ appName }}</h1>
+        <UButton
+          :icon="isCollapsed ? 'i-lucide-menu' : 'i-lucide-x'"
+          color="white"
+          variant="ghost"
+          size="sm"
+          @click="toggleSidebar"
+          class="text-white hover:bg-white/10"
+        />
+      </div>
+
+      <!-- Top Controls -->
+      <div class="border-b border-white/20 p-4 space-y-3">
+        <ThemeSwitcher :is-collapsed="isCollapsed" />
+        <ColorPicker :is-collapsed="isCollapsed" />
+        <LangSwitcher :is-collapsed="isCollapsed" :show-label="!isCollapsed" />
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="flex-1 overflow-y-auto p-4">
+        <div class="space-y-2">
+          <div v-for="item in navigationItems" :key="item.key">
+            <!-- Collapsed: Icon with tooltip -->
+            <UTooltip v-if="isCollapsed" :text="item.label" :popper="{ placement: 'right' }">
+              <NuxtLink
+                :to="item.to"
+                :class="[
+                  'flex items-center justify-center p-2 rounded-lg transition-all duration-200',
+                  activeItem === item.key
+                    ? 'bg-white/20 text-white' 
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                ]"
+                @click="setActiveItem(item.key)"
+              >
+                <UIcon :name="item.icon" class="w-5 h-5" />
+              </NuxtLink>
+            </UTooltip>
+
+            <!-- Expanded: Full menu item -->
+            <NuxtLink
+              v-else
+              :to="item.to"
+              :class="[
+                'flex items-center px-3 py-2 rounded-lg transition-all duration-200 group w-full',
+                activeItem === item.key
+                  ? 'bg-white/20 text-white' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              ]"
+              @click="setActiveItem(item.key)"
+            >
+              <UIcon :name="item.icon" class="w-5 h-5 flex-shrink-0" />
+              <span class="font-medium text-sm truncate ml-3">{{ item.label }}</span>
+              <UBadge v-if="item.badge" color="red" size="xs" class="ml-auto">
+                {{ item.badge }}
+              </UBadge>
+            </NuxtLink>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Bottom Section -->
+      <div class="border-t border-white/20 p-4 space-y-3">
+        <!-- Cart Button -->
+        <div v-if="!isCollapsed">
+          <CartDrawer />
+        </div>
+        <UTooltip v-else :text="$t('sidebar.cart')" :popper="{ placement: 'right' }">
+          <UButton
+            icon="i-lucide-shopping-cart"
+            color="white"
+            variant="ghost"
+            size="sm"
+            class="text-white hover:bg-white/10 relative w-full justify-center"
+            @click="openCartDrawer"
+          >
+            <UBadge 
+              v-if="cartItemsCount > 0" 
+              color="red" 
+              size="xs"
+              class="absolute -top-1 -right-1 min-w-[16px] h-4 text-xs"
+            >
+              {{ cartItemsCount }}
+            </UBadge>
+          </UButton>
+        </UTooltip>
+
+        <!-- Logout Button -->
+        <UTooltip v-if="isCollapsed" :text="$t('sidebar.logout')" :popper="{ placement: 'right' }">
+          <UButton
+            icon="i-lucide-log-out"
+            color="white"
+            variant="ghost"
+            size="sm"
+            @click="isLogoutModalOpen = true"
+            class="w-full text-white hover:bg-white/10 justify-center"
+          />
+        </UTooltip>
+        <UButton
+          v-else
+          icon="i-lucide-log-out"
+          :label="$t('sidebar.logout')"
+          color="white"
+          variant="ghost"
+          size="sm"
+          @click="isLogoutModalOpen = true"
+          class="w-full text-white hover:bg-white/10"
+        />
+      </div>
     </div>
 
-    <UNavigationMenu :items="items" class="flex-center flex-1 z-[1000]" />
-
-    <div class="flex-center">
-       <LangSwitcher />
-      <CartDrawer />
-      <UButton
-        icon="i-lucide-log-out"
-        color="primary"
-        variant="ghost"
-        @click="isLogoutModalOpen = true"
-      >
-        Logout
-      </UButton>
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <main class="flex-1 overflow-y-auto bg-primary p-4">
+        <slot />
+      </main>
     </div>
 
-    <!-- UModal Logout Confirmation -->
+    <!-- Logout Modal -->
     <ConfirmModal
       :is-open="isLogoutModalOpen"
-      title="Confirm Logout"
-      message="Are you sure you want to logout?"
-      confirm-text="Logout"
+      :title="$t('sidebar.confirmLogout')"
+      :message="$t('sidebar.logoutMessage')"
+      :confirm-text="$t('sidebar.logout')"
       icon="i-lucide-log-out"
       :loading="isLoggingOut"
       @confirm="handleLogout"
       @cancel="isLogoutModalOpen = false"
-    >
-    </ConfirmModal>
+    />
+
+    <UNotifications />
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-
+// Composables
 const { appName } = useRuntimeConfig().public
+const { t } = useI18n()
+const localePath = useLocalePath()
+const { logout } = useAuthEnhanced()
+const { initTheme } = useAppTheme()
+const toast = useToast()
 
-// 🔥 FIX: Use useAuthEnhanced instead of useAuth
-const { loggedIn, user, logout } = useAuthEnhanced()
-const isLogoutModalOpen = ref(false);
-const isLoggingOut = ref(false);
+// Persistent state (cookies only)
+const isCollapsed = useCookie('sidebar-collapsed', {
+  default: () => false,
+  maxAge: 60 * 60 * 24 * 365, // 1 year
+  sameSite: 'lax'
+})
 
-const items = ref([
-  {
-    label: "Men",
-    icon: "i-lucide-user",
-    to: "/men",
-    children: [
-      {
-        label: "Clothing",
-        description: "Latest fashion trends for men",
-        icon: "i-lucide-shirt",
-        children: [
-          {
-            label: "T-Shirts",
-            description: "Casual and formal t-shirts",
-            to: "/",
-          },
-          {
-            label: "Shirts",
-            description: "Dress and casual shirts",
-            to: "/",
-          },
-          {
-            label: "Jeans",
-            description: "Denim jeans and pants",
-            to: "/",
-          },
-          {
-            label: "Jackets",
-            description: "Outerwear and blazers",
-            to: "/men/clothing/jackets",
-          },
-        ],
-      },
-      {
-        label: "Footwear",
-        description: "Shoes for every occasion",
-        icon: "i-lucide-footprints",
-        children: [
-          {
-            label: "Sneakers",
-            description: "Sports and casual sneakers",
-            to: "/men/footwear/sneakers",
-          },
-          {
-            label: "Formal Shoes",
-            description: "Business and dress shoes",
-            to: "/men/footwear/formal",
-          },
-          {
-            label: "Boots",
-            description: "Casual and work boots",
-            to: "/men/footwear/boots",
-          },
-        ],
-      },
-      {
-        label: "Accessories",
-        icon: "i-lucide-watch",
-        description: "Complete your look",
-        children: [
-          {
-            label: "Watches",
-            description: "Luxury and casual watches",
-            to: "/men/accessories/watches",
-          },
-          {
-            label: "Wallets",
-            description: "Leather and fabric wallets",
-            to: "/men/accessories/wallets",
-          },
-          {
-            label: "Belts",
-            description: "Casual and formal belts",
-            to: "/men/accessories/belts",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Women",
-    icon: "i-lucide-user",
-    to: "/women",
-    children: [
-      {
-        label: "Clothing",
-        description: "Trendy fashion for women",
-        icon: "i-lucide-shirt",
-        children: [
-          {
-            label: "Dresses",
-            description: "Casual and party dresses",
-            to: "/women/clothing/dresses",
-          },
-          {
-            label: "Tops",
-            description: "Blouses, t-shirts and tanks",
-            to: "/women/clothing/tops",
-          },
-          {
-            label: "Jeans",
-            description: "Skinny, straight and bootcut",
-            to: "/women/clothing/jeans",
-          },
-          {
-            label: "Skirts",
-            description: "Mini, midi and maxi skirts",
-            to: "/women/clothing/skirts",
-          },
-        ],
-      },
-      {
-        label: "Footwear",
-        description: "Stylish shoes for women",
-        icon: "i-lucide-footprints",
-        children: [
-          {
-            label: "Heels",
-            description: "High heels and pumps",
-            to: "/women/footwear/heels",
-          },
-          {
-            label: "Flats",
-            description: "Comfortable everyday shoes",
-            to: "/women/footwear/flats",
-          },
-          {
-            label: "Sneakers",
-            description: "Athletic and casual sneakers",
-            to: "/women/footwear/sneakers",
-          },
-          {
-            label: "Boots",
-            description: "Ankle and knee-high boots",
-            to: "/women/footwear/boots",
-          },
-        ],
-      },
-      {
-        label: "Accessories",
-        icon: "i-lucide-gem",
-        description: "Beautiful accessories",
-        children: [
-          {
-            label: "Jewelry",
-            description: "Necklaces, earrings and bracelets",
-            to: "/women/accessories/jewelry",
-          },
-          {
-            label: "Handbags",
-            description: "Purses, totes and clutches",
-            to: "/women/accessories/handbags",
-          },
-          {
-            label: "Scarves",
-            description: "Silk and cotton scarves",
-            to: "/women/accessories/scarves",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Electronics",
-    icon: "i-lucide-smartphone",
-    to: "/electronics",
-    children: [
-      {
-        label: "Smartphones",
-        description: "Latest mobile phones",
-        icon: "i-lucide-smartphone",
-        children: [
-          {
-            label: "iPhone",
-            description: "Apple smartphones",
-            to: "/electronics/smartphones/iphone",
-          },
-          {
-            label: "Samsung",
-            description: "Samsung Galaxy series",
-            to: "/electronics/smartphones/samsung",
-          },
-          {
-            label: "Android",
-            description: "Various Android phones",
-            to: "/electronics/smartphones/android",
-          },
-        ],
-      },
-      {
-        label: "Laptops",
-        description: "Computers and laptops",
-        icon: "i-lucide-laptop",
-        children: [
-          {
-            label: "Gaming Laptops",
-            description: "High-performance gaming",
-            to: "/electronics/laptops/gaming",
-          },
-          {
-            label: "Business Laptops",
-            description: "Professional workstations",
-            to: "/electronics/laptops/business",
-          },
-          {
-            label: "Ultrabooks",
-            description: "Thin and light laptops",
-            to: "/electronics/laptops/ultrabooks",
-          },
-        ],
-      },
-      {
-        label: "Audio",
-        description: "Headphones and speakers",
-        icon: "i-lucide-headphones",
-        children: [
-          {
-            label: "Headphones",
-            description: "Over-ear and on-ear",
-            to: "/electronics/audio/headphones",
-          },
-          {
-            label: "Earbuds",
-            description: "Wireless and wired earbuds",
-            to: "/electronics/audio/earbuds",
-          },
-          {
-            label: "Speakers",
-            description: "Bluetooth and home speakers",
-            to: "/electronics/audio/speakers",
-          },
-        ],
-      },
-      {
-        label: "Gaming",
-        description: "Gaming consoles and accessories",
-        icon: "i-lucide-gamepad-2",
-        children: [
-          {
-            label: "Consoles",
-            description: "PlayStation, Xbox, Nintendo",
-            to: "/electronics/gaming/consoles",
-          },
-          {
-            label: "Games",
-            description: "Latest video games",
-            to: "/electronics/gaming/games",
-          },
-          {
-            label: "Accessories",
-            description: "Controllers and peripherals",
-            to: "/electronics/gaming/accessories",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Sale",
-    icon: "i-lucide-tag",
-    badge: "Hot",
-    to: "/sale",
-    children: [
-      {
-        label: "Flash Sale",
-        description: "Limited time offers",
-        icon: "i-lucide-zap",
-        to: "/sale/flash",
-      },
-      {
-        label: "Clearance",
-        description: "Final sale items",
-        icon: "i-lucide-percent",
-        to: "/sale/clearance",
-      },
-      {
-        label: "Bundle Deals",
-        description: "Buy more, save more",
-        icon: "i-lucide-package",
-        to: "/sale/bundles",
-      },
-    ],
-  },
-]);
+const activeItem = useCookie('sidebar-active-item', {
+  default: () => 'men',
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: 'lax'
+})
 
-// 🔥 FIX: Updated logout handler to use async/await properly
+// Local state
+const isLogoutModalOpen = ref(false)
+const isLoggingOut = ref(false)
+const cartItemsCount = ref(3)
+
+// Navigation configuration
+const navigationConfig = [
+  { key: "men", translationKey: "sidebar.men", icon: "i-lucide-user", route: "/men" },
+  { key: "women", translationKey: "sidebar.women", icon: "i-lucide-user", route: "/women" },
+  { key: "electronics", translationKey: "sidebar.electronics", icon: "i-lucide-smartphone", route: "/electronics" },
+  { key: "sale", translationKey: "sidebar.sale", icon: "i-lucide-tag", badgeKey: "sidebar.hot", route: "/sale" }
+]
+
+// Computed navigation items
+const navigationItems = computed(() => {
+  return navigationConfig.map(item => ({
+    key: item.key,
+    label: t(item.translationKey),
+    icon: item.icon,
+    to: localePath(item.route),
+    badge: item.badgeKey ? t(item.badgeKey) : undefined
+  }))
+})
+
+// Methods
+const toggleSidebar = () => {
+  isCollapsed.value = !isCollapsed.value
+}
+
+const setActiveItem = (itemKey) => {
+  activeItem.value = itemKey
+}
+
+const openCartDrawer = () => {
+  toast.add({
+    title: t('sidebar.cartOpened'),
+    description: t('sidebar.cartItems', { count: cartItemsCount.value }),
+    icon: "i-lucide-shopping-cart",
+    timeout: 3000
+  })
+}
+
 const handleLogout = async () => {
   try {
-    isLoggingOut.value = true;
-    
-    // 🔥 FIX: Wait for logout to complete
+    isLoggingOut.value = true
     await logout('manual')
-    
-    // Close the modal
-    isLogoutModalOpen.value = false;
+    isLogoutModalOpen.value = false
 
-    // Show success toast
-    const toast = useToast();
     toast.add({
-      title: "Logged out successfully",
-      description: "You have been logged out of your account",
-      color: "success",
+      title: t('sidebar.logoutSuccess'),
+      description: t('sidebar.logoutSuccessMessage'),
       icon: "i-lucide-check-circle",
-    });
+    })
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error('Logout error:', error)
     
-    // Show error toast
-    const toast = useToast();
     toast.add({
-      title: "Logout failed",
-      description: "There was an error logging out. Please try again.",
-      color: "error",
+      title: t('sidebar.logoutFailed'),
+      description: t('sidebar.logoutFailedMessage'),
       icon: "i-lucide-x-circle",
-    });
+    })
   } finally {
-    isLoggingOut.value = false;
+    isLoggingOut.value = false
   }
-};
+}
+
+// Initialize theme on mount
+onMounted(() => {
+  initTheme()
+})
 </script>
