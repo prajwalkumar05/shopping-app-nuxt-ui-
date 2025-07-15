@@ -13,12 +13,12 @@ export default defineAppConfig({
     }
   },
   
-  // Theme configuration for your ColorPicker
+  // Theme configuration - Updated with Green as default
   themes: {
-    teal: {
-      name: 'Teal',
-      color: 'teal',
-      primary: '#086972'
+    green: {
+      name: 'Green',
+      color: 'green',
+      primary: '#059669'
     },
     red: {
       name: 'Red',

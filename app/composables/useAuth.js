@@ -59,7 +59,7 @@ export const useAuthEnhanced = () => {
       const loginData = {
         username: credentials.username,
         password: credentials.password,
-        expiresInMins: credentials.remember ? 30 : 5,
+        expiresInMins: credentials.remember ? 30 : 30,
       };
 
       // Store remember 

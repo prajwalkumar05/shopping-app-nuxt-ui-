@@ -1,5 +1,5 @@
 // Global API configuration
 export const getApiBaseUrl = () => {
-  const { apiBaseUrl } = useRuntimeConfig().public
+  const  apiBaseUrl  = "https://dummyjson.com"
   return apiBaseUrl
 }

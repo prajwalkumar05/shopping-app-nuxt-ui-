@@ -3,12 +3,20 @@ export default defineNuxtConfig({
 
   modules: ["@nuxt/ui", "@pinia/nuxt", "@sidebase/nuxt-auth", "@nuxtjs/i18n","@vueuse/nuxt"],
 
+   plugins: [
+    // './plugin/echo.client.js',        
+    // './plugin/backendMimic.client.js', // Backend mimic second
+    './plugin/pusher.client.js',
+    './plugin/notifications.client.js'
+  ],
+
   // Nuxt UI configuration with theme colors
   ui: {
     global: true,
     icons: ['lucide', 'heroicons'],
-    safelistColors: ['primary', 'red', 'orange', 'green', 'blue', 'pink', 'purple', 'teal']
+   
   },
+  
 
   // Color mode configuration
   colorMode: {
@@ -55,25 +63,23 @@ export default defineNuxtConfig({
 
   css: ["~/assets/css/main.css"],
 
-  // App configuration with theme script
+  // Simple script - fixed dark mode flash
   app: {
     head: {
-      htmlAttrs: {
-        class: 'light'
-      },
       meta: [
         { name: 'color-scheme', content: 'light dark' }
       ],
       script: [
-      {
-        innerHTML: `
-          const t=(document.cookie.match(/app-theme=([^;]+)/)||[])[1]||'teal';
-          const c={teal:'#086972',red:'#f06595',purple:'#845ef7',blue:'#339af0'};
-          document.documentElement.style.setProperty('--theme-primary',c[t]);
-        `,
-        type: 'text/javascript'
-      }
-    ]
+        {
+          innerHTML: `
+            document.documentElement.classList.add(localStorage.getItem('nuxt-color-mode') || 'light');
+            const theme = localStorage.getItem('app-theme') || 'green';
+            const colors = {green:'#059669', red:'#f06595', purple:'#845ef7', blue:'#339af0'};
+            document.documentElement.style.setProperty('--theme-primary', colors[theme]);
+          `,
+          type: 'text/javascript'
+        }
+      ]
     }
   },
 
@@ -113,14 +119,6 @@ export default defineNuxtConfig({
         cookieName: "auth.token",
         headerName: "Authorization",
         maxAgeInSeconds: 30 * 60,
-        sameSiteAttribute: "lax",
-        httpOnlyCookieAttribute: false,
-      },
-
-      refreshToken: {
-        signInResponseRefreshTokenPointer: "/refreshToken",
-        cookieName: "auth.refresh-token",
-        maxAgeInSeconds: 30 * 60,
         httpOnlyCookieAttribute: false,
       },
 
@@ -143,10 +141,21 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "https://dummyjson.com",
+      // apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "https://dummyjson.com",
       appName: process.env.APP_NAME || "Shopping App",
       authUrl: process.env.NUXT_PUBLIC_SITE_URL || "http://localhost:3000",
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "http://localhost:3000",
+
+      reverbHost: "localhost",
+      reverbPort: 6001,
+      reverbKey: "fkll4yezwmuipofehws5",
+      // apiBaseUrl: "http://localhost:8000",
+
+       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL,
+      authToken: process.env.NUXT_PUBLIC_AUTH_TOKEN,
+      pusherKey: process.env.NUXT_PUBLIC_PUSHER_KEY,
+      pusherHost: process.env.NUXT_PUBLIC_PUSHER_HOST,
+      pusherPort: process.env.NUXT_PUBLIC_PUSHER_PORT
     },
   },
 

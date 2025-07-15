@@ -16,9 +16,11 @@
       
       <template #trailing v-if="!isCollapsed">
         <div class="flex items-center gap-2">
+          <!-- Color dot with CSS-based color to prevent flash -->
           <div 
-            class="w-3 h-3 rounded-full border border-white/30 transition-colors duration-300"
-            :style="{ backgroundColor: currentTheme.primary }"
+            ref="colorDot"
+            class="theme-color-dot w-3 h-3 rounded-full border border-white/30 transition-colors duration-300"
+            :style="isHydrated ? { backgroundColor: currentTheme.primary } : undefined"
           />
           <UIcon 
             name="i-heroicons-chevron-down" 
@@ -92,7 +94,7 @@
         <div class="mt-3 pt-2 border-t border-gray-100 dark:border-gray-700">
           <div class="flex items-center justify-between">
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Applied globally
+              Saved in localStorage
             </p>
             <div class="flex items-center gap-1">
               <div class="w-2 h-2 rounded-full bg-green-500"></div>
@@ -136,6 +138,8 @@ const { currentTheme, themeOptions, setTheme, isCurrentTheme } = useAppTheme()
 
 // State
 const isOpen = ref(false)
+const isHydrated = ref(false)
+const colorDot = ref(null)
 
 // Methods
 const toggleDropdown = () => {
@@ -158,9 +162,51 @@ const handleThemeChange = (themeKey) => {
       color: 'green',
       timeout: 2000
     })
+    
+    // Update dot color immediately
+    updateDotColor()
   }
 
   closeDropdown()
 }
 
+const updateDotColor = () => {
+  if (colorDot.value && process.client) {
+    // Get current theme color from CSS custom property
+    const currentColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--theme-primary').trim()
+    
+    if (currentColor) {
+      colorDot.value.style.backgroundColor = currentColor
+    }
+  }
+}
+
+// Handle hydration and initial color setup
+onMounted(() => {
+  // Small delay to ensure theme is applied
+  nextTick(() => {
+    updateDotColor()
+    isHydrated.value = true
+  })
+})
+
+// Watch for theme changes
+watch(() => currentTheme.value, () => {
+  nextTick(() => {
+    updateDotColor()
+  })
+}, { immediate: true })
 </script>
+
+<style scoped>
+/* CSS-based color dot that reads from CSS custom property */
+.theme-color-dot {
+  background-color: var(--theme-primary);
+}
+
+/* Ensure the dot is always the correct color on initial load */
+.theme-color-dot:not([style*="background-color"]) {
+  background-color: var(--theme-primary) !important;
+}
+</style>

@@ -3,7 +3,7 @@
   <div class="flex h-screen bg-primary transition-all duration-300">
     <!-- Sidebar -->
     <div :class="[
-      'bg-theme shadow-lg transition-all duration-300 ease-in-out flex flex-col relative z-[1001]',
+      'bg-theme shadow-lg transition-all duration-100 ease-in-out flex flex-col relative z-[1001]',
       isCollapsed ? 'w-16' : 'w-72'
     ]">
       <!-- Header -->
@@ -137,7 +137,6 @@
       @cancel="isLogoutModalOpen = false"
     />
 
-    <UNotifications />
   </div>
 </template>
 
@@ -150,10 +149,10 @@ const { logout } = useAuthEnhanced()
 const { initTheme } = useAppTheme()
 const toast = useToast()
 
-// Persistent state (cookies only)
+// cookies only
 const isCollapsed = useCookie('sidebar-collapsed', {
   default: () => false,
-  maxAge: 60 * 60 * 24 * 365, // 1 year
+  maxAge: 60 * 60 * 24 * 365, 
   sameSite: 'lax'
 })
 
@@ -170,10 +169,12 @@ const cartItemsCount = ref(3)
 
 // Navigation configuration
 const navigationConfig = [
-  { key: "men", translationKey: "sidebar.men", icon: "i-lucide-user", route: "/men" },
-  { key: "women", translationKey: "sidebar.women", icon: "i-lucide-user", route: "/women" },
-  { key: "electronics", translationKey: "sidebar.electronics", icon: "i-lucide-smartphone", route: "/electronics" },
-  { key: "sale", translationKey: "sidebar.sale", icon: "i-lucide-tag", badgeKey: "sidebar.hot", route: "/sale" }
+  { key: "men", translationKey: "sidebar.men", icon: "i-lucide-user", route: "/" },
+  { key: "women", translationKey: "sidebar.women", icon: "i-lucide-user", route: "/" },
+  { key: "electronics", translationKey: "sidebar.electronics", icon: "i-lucide-smartphone", route: "/" },
+  { key: "sale", translationKey: "sidebar.sale", icon: "i-lucide-tag", badgeKey: "sidebar.hot", route: "/" },
+  { key: "users", translationKey: "Chat", icon: "i-lucide-tag", badgeKey: "sidebar.hot", route: "/echo-test" },
+  { key: "users", translationKey: "Annnouncement", icon: "i-lucide-tag", badgeKey: "sidebar.hot", route: "/echo-test/announcement" }
 ]
 
 // Computed navigation items

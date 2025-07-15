@@ -5,9 +5,9 @@
 
 /* ===== TAILWIND THEME CONFIGURATION ===== */
 @theme {
-  /* Core Colors */
-  --color-primary: #086972;
-  --color-secondary: #086972;
+  /* Core Colors - Updated to Green */
+  --color-primary: #059669;
+  --color-secondary: #059669;
   --color-tertiary: #6741d9;
   --color-info: #339af0;
   --color-success: #28a745;
@@ -26,8 +26,8 @@
 
 /* ===== THEME SYSTEM ===== */
 :root {
-  /* Dynamic Theme Colors */
-  --theme-primary: #086972;
+  /* Dynamic Theme Colors - Green Default */
+  --theme-primary: #059669;
   --ui-primary: var(--theme-primary);
 
   /* Light Mode Colors */
@@ -45,8 +45,8 @@
   --spacing-xlarge: 30px;
 }
 
-/* Theme Color Variations */
-[data-theme="teal"] { --theme-primary: #086972; }
+/* Theme Color Variations - Updated Green */
+[data-theme="green"] { --theme-primary: #059669; }
 [data-theme="red"] { --theme-primary: #f06595; }
 [data-theme="purple"] { --theme-primary: #845ef7; }
 [data-theme="blue"] { --theme-primary: #339af0; }
@@ -79,5 +79,15 @@
 .border-theme { border-color: var(--border-color); }
 .border-theme-primary { border-color: var(--theme-primary); }
 
+/* Button Utilities */
+.btn-theme-primary {
+  background-color: var(--theme-primary);
+  color: white;
+  border-color: var(--theme-primary);
+}
 
-
+.btn-theme-outline {
+  background-color: transparent;
+  color: var(--theme-primary);
+  border-color: var(--theme-primary);
+}
