@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "prepare": "husky"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.44",
@@ -22,7 +23,9 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.4.1",
-    "eslint": "^9.27.0",
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "eslint": "^9.34.0",
+    "husky": "^9.1.7",
     "typescript": "^5.8.3"
   }
 }
