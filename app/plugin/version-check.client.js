@@ -24,6 +24,7 @@ export default defineNuxtPlugin(() => {
       
       // If versions don't match, show update notification
       if (currentVersion !== configVersion) {
+        toast.clear()
         toast.add({
           title: 'Update Available',
           description: 'A new version is available. Please refresh the page to get the latest features and bug fixes.',
