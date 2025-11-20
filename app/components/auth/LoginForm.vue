@@ -74,7 +74,7 @@ const router = useRouter();
 const state = reactive({
   username: undefined,
   password: undefined,
-  remember_me: false,
+  remember_me: true,
 });
 
 const validate = (state) => {

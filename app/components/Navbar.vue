@@ -1,7 +1,7 @@
 <template>
   <div class="flex-between px-12 z-[1000]">
-    <div class="pages-title">
-      <h1 class="font-bold text-white">{{appName}}</h1>
+    <div class="pages-title flex gap-2">
+     <p text-green>v{{ config.public.APP_VERSION }}</p> <h1 class="font-bold text-stone-950">{{appName}}</h1>
     </div>
 
     <UNavigationMenu :items="items" class="flex-center flex-1 z-[1000]" />
@@ -36,6 +36,7 @@
 <script setup>
 import { ref } from "vue";
 import { useAuthStore } from "~/stores/auth";
+const config = useRuntimeConfig();
 
 const { appName } = useRuntimeConfig().public
 
