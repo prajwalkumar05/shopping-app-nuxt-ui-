@@ -23,8 +23,12 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.4.1",
+<<<<<<< HEAD
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "eslint": "^9.34.0",
+=======
+    "eslint": "^9.27.0",
+>>>>>>> 51c7acbd584fac3837b677121b7e19bcab53bc5c
     "husky": "^9.1.7",
     "typescript": "^5.8.3"
   }
