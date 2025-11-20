@@ -4,7 +4,7 @@
   <div class="h-full flex flex-col">
     <div class="flex justify-center bg-primary">
       <div class="w-full max-w-[1200px] px-4 ">
-        <h1 class="text-2xl text-primary font-bold">Products test</h1>
+        <h1 class="text-2xl text-primary font-bold">Products List</h1>
       </div>
     </div>
 
