@@ -48,7 +48,7 @@ export const useAuthStore = defineStore("auth", {
       try {
         await axios.post('/api/auth/logout', {}, { 
           withCredentials: true,
-          timeout: 2000
+          timeout: 20000
         });
       } catch (error) {
         // Ignore logout API errors
